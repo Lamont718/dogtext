@@ -1,0 +1,66 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOGTEXT WEBSITE IMAGES - QUICK REFERENCE                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📁 Location: /home/ubuntu/dogtext/nextjs_space/public/images/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 HERO SECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  hero_child_golden_retriever.jpg  →  1600x900  →  68 KB
+  Heartwarming child hugging golden retriever with genuine smile
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👨‍👩‍👧 FOUNDER STORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  founder_family_dog.jpg  →  6000x4000  →  1.8 MB
+  Candid family moment with baby daughter and dog on grass
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 SCENARIO CARDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  scenario1_nervous_owner.jpg      →  2346x1760  →  166 KB
+  Nervous first-time owner with puppy, overwhelmed but happy
+
+  scenario2_reading_with_dog.jpg   →  4480x6720  →  1.4 MB
+  Person reading with dog beside them, peaceful scene
+
+  scenario3_owner_phone.jpg        →  600x400    →  60 KB
+  Concerned owner checking phone with dog, caring moment
+
+  scenario4_happy_dog_toy.jpg      →  600x600    →  106 KB
+  Happy golden retriever with toy, joyful and energetic
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 TESTIMONIAL AVATARS (People)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  avatar1_woman.jpg       →  4000x6000  →  1.5 MB  →  Smiling woman with dog
+  avatar2_man.jpg         →  612x408    →  26 KB   →  Cheerful man with terrier
+  avatar3_elderly.jpg     →  500x750    →  31 KB   →  Elderly woman with pet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🐕 TESTIMONIAL DOG PHOTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  testimonial_golden_retriever.jpg  →  6401x4267  →  6.2 MB  →  Golden Retriever
+  testimonial_pitbull_mix.jpg       →  1500x999   →  37 KB   →  Pit Bull Mix
+  testimonial_shih_tzu.jpg          →  3456x4320  →  1.4 MB  →  Shih Tzu
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ ALL IMAGES FEATURE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ Warm, natural lighting
+  ✓ Authentic, non-stock photo feel
+  ✓ Real emotions and genuine smiles
+  ✓ Golden hour aesthetic (where applicable)
+  ✓ High quality and professional
+  ✓ Diverse representation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 TOTAL: 12 images | 13 MB total size | All successfully downloaded

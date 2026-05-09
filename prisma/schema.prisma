@@ -1,0 +1,267 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String    @id @default(cuid())
+  firstName         String?
+  lastName          String?
+  email             String    @unique
+  emailVerified     DateTime?
+  password          String?
+  image             String?
+  subscriptionTier  String    @default("FREE") // FREE, PREMIUM, FAMILY
+  subscriptionId    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  accounts         Account[]
+  sessions         Session[]
+  dogs             Dog[]
+  aiChatMessages   AiChatMessage[]
+  messageUsage     MessageUsage[]
+  bookmarks        UserBookmark[]
+  settings         UserSettings?
+  celebrations     Celebration[]
+  dailyBarks       DailyBark[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Core application models
+model Dog {
+  id                 String   @id @default(cuid())
+  userId             String
+  name               String
+  breed              String
+  age                Int?
+  ageUnit            String?  // months, years
+  weight             Float?
+  weightUnit         String?  // lbs, kg
+  gender             String?  // male, female
+  personalityTraits  String[] // playful, calm, energetic, etc.
+  healthConditions   String[] // any known health issues
+  photoUrl           String?
+  cloudStoragePath   String?  // S3 key for photo
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiChatMessages AiChatMessage[]
+  dailyBarks     DailyBark[]
+
+  @@map("dogs")
+}
+
+model BreedProfile {
+  id                   String   @id @default(cuid())
+  breedName            String   @unique
+  slug                 String   @unique
+  description          String   @db.Text
+  origin               String   @db.Text
+  physicalCharacteristics String @db.Text
+  temperament          String   @db.Text
+  exerciseNeeds        String   @db.Text
+  groomingRequirements String   @db.Text
+  healthConsiderations String   @db.Text
+  trainingTips         String   @db.Text
+  idealLivingConditions String  @db.Text
+  imageUrl             String?
+  imageAlt             String?
+  sizeCategory         String?  // toy, small, medium, large, giant
+  energyLevel          String?  // low, moderate, high
+  groomingLevel        String?  // low, moderate, high
+  trainability         String?  // easy, moderate, challenging
+  familyFriendly       Boolean  @default(true)
+  goodWithKids         Boolean  @default(true)
+  goodWithPets         Boolean  @default(true)
+  isPopular            Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("breed_profiles")
+}
+
+model Article {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  content       String    @db.Text
+  excerpt       String?   @db.Text
+  category      String    // training, health, nutrition, puppy-care, senior-care
+  readTime      Int       // estimated reading time in minutes
+  author        String    @default("DogText Expert Team")
+  imageUrl      String?
+  imageAlt      String?
+  tags          String[]  // for filtering and search
+  isPublished   Boolean   @default(true)
+  isFeatured    Boolean   @default(false)
+  viewCount     Int       @default(0)
+  publishedAt   DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  bookmarks UserBookmark[]
+
+  @@map("articles")
+}
+
+model AiChatMessage {
+  id          String   @id @default(cuid())
+  userId      String
+  dogId       String
+  messageText String   @db.Text
+  senderType  String   // user, ai
+  metadata    Json?    // store breed context, personality context, etc.
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dog  Dog  @relation(fields: [dogId], references: [id], onDelete: Cascade)
+
+  @@map("ai_chat_messages")
+  @@index([userId, dogId, createdAt])
+}
+
+model MessageUsage {
+  id           String   @id @default(cuid())
+  userId       String
+  weekStartDate DateTime // start of the week (Monday)
+  messageCount  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStartDate], name: "userId_weekStartDate")
+  @@map("message_usage")
+}
+
+model UserBookmark {
+  id          String   @id @default(cuid())
+  userId      String
+  contentType String   // article, breed_profile
+  contentId   String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@map("user_bookmarks")
+}
+
+model UserSettings {
+  id                    String  @id @default(cuid())
+  userId                String  @unique
+  emailNotifications    Boolean @default(true)
+  marketingEmails       Boolean @default(false)
+  weeklyDigest          Boolean @default(true)
+  chatPersonality       String  @default("friendly") // friendly, professional, playful
+  preferredUnits        String  @default("imperial") // imperial, metric
+  timezone              String  @default("America/New_York")
+  language              String  @default("en")
+  themePreference       String  @default("system") // light, dark, system
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+// Daily Bark — one short morning message from each dog, generated lazily and shareable.
+// The retention loop: a reason to open the app every morning even when nothing's wrong.
+model DailyBark {
+  id            String    @id @default(cuid())
+  userId        String
+  dogId         String
+  generatedFor  DateTime  @db.Date  // YYYY-MM-DD UTC, the "day" this bark belongs to
+  messageText   String    @db.Text
+  viewedAt      DateTime?
+  shareCount    Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dog  Dog  @relation(fields: [dogId], references: [id], onDelete: Cascade)
+
+  @@unique([dogId, generatedFor], name: "dogId_generatedFor")
+  @@index([userId, generatedFor])
+  @@map("daily_barks")
+}
+
+model Celebration {
+  id               String   @id @default(cuid())
+  userId           String
+  dogId            String
+  dogName          String   // denormalized for display
+  dogBreed         String   // denormalized for display
+  milestoneType    String   // birthday, adoption_anniversary, gotcha_day, training_achievement, health_milestone
+  photoUrl         String
+  cloudStoragePath String   // S3 key for photo
+  caption          String   // max 100 characters
+  milestoneDate    DateTime // the date of the milestone
+  status           String   @default("pending") // pending, approved, rejected
+  rejectionReason  String?  // reason for rejection if rejected
+  submittedAt      DateTime @default(now())
+  reviewedAt       DateTime?
+  reviewedBy       String?  // admin user ID who reviewed
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("celebrations")
+  @@index([status, submittedAt])
+  @@index([milestoneType, status])
+}
