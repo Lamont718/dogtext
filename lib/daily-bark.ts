@@ -1,6 +1,6 @@
 import type { Dog, BreedProfile, AiChatMessage } from '@prisma/client';
 
-const ABACUS_API_URL = 'https://apps.abacus.ai/v1/chat/completions';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 const SEASONS: { name: string; months: number[] }[] = [
   { name: 'winter', months: [11, 0, 1] },
@@ -56,20 +56,20 @@ Write ONE short text message — exactly 1 to 2 sentences, max 220 characters to
 }
 
 export async function generateDailyBark(inputs: BarkInputs): Promise<string | null> {
-  const apiKey = process.env.ABACUSAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
 
   const prompt = buildBarkPrompt(inputs);
 
   try {
-    const response = await fetch(ABACUS_API_URL, {
+    const response = await fetch(OPENAI_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '../../../lib/rate-limit';
 
-const ABACUS_API_URL = 'https://api.abacus.ai/v1/chat/completions';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 const ALLOWED_BREEDS = [
   'golden-retriever', 'labrador', 'german-shepherd', 'french-bulldog',
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!process.env.ABACUSAI_API_KEY) {
+  if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: 'AI service not configured' }, { status: 503 });
   }
 
@@ -59,14 +59,14 @@ Messages should be:
 Format: Return ONLY the 3 messages, one per line, without numbering or labels.`;
 
   try {
-    const response = await fetch(ABACUS_API_URL, {
+    const response = await fetch(OPENAI_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',

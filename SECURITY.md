@@ -1,22 +1,39 @@
-# Security notes for DogText
+# DogText — deploy & security notes
 
-## Rotate before launch
+## Off-Abacus migration
 
-The `.env` shipped in the original Abacus.AI source-code zip contained live credentials.
-Anyone who ever had a copy of that zip has these. Treat them as compromised and rotate
-before any public traffic:
+DogText started as an Abacus.AI export. We've cut the cord:
 
-- `DATABASE_URL` — Postgres password on `db003.hosteddb.reai.io`. Cycle the role password
-  (or migrate to a fresh DB you own) and update the URL.
-- `NEXTAUTH_SECRET` — generate a new one: `openssl rand -base64 32`. Rotating this
-  invalidates all existing JWT sessions, so plan for a forced re-login.
-- `ABACUSAI_API_KEY` — request a new key from Abacus and revoke the old one.
+- **LLM**: code now calls `https://api.openai.com/v1/chat/completions` directly with
+  `OPENAI_API_KEY`. Model is `gpt-4o-mini` for chat, the public homepage demo, and
+  Daily Bark generation. No Abacus dependency anywhere in the code.
+- **Database**: still pointed at the Abacus-hosted Postgres in your local `.env`.
+  Provision a fresh DB before deploy and update `DATABASE_URL`.
+- **Storage**: AWS env vars in the original `.env` point at an Abacus-hosted S3
+  bucket. Provision a fresh S3-compatible bucket (or leave AWS keys blank if you're
+  not turning on celebration uploads in v1).
 
-## Set before launch
+## Required env vars on Vercel
 
-- `ADMIN_EMAILS` is a comma-separated list (case-insensitive). The shipped value is the
-  placeholder `john@doe.com`, which means no real admin exists. Set this to your own
-  email so you can approve/reject celebration submissions at `/admin/celebrations`.
+| Var | Where to get it | Notes |
+|-----|-----------------|-------|
+| `DATABASE_URL` | Neon / Supabase / Railway / RDS | Run `npx prisma db push` once against this DB to create all tables (including `daily_barks`). |
+| `NEXTAUTH_SECRET` | `openssl rand -base64 32` | Fresh value, never reuse the leaked-in-zip one. |
+| `NEXTAUTH_URL` | Your Vercel deploy URL | Set after first deploy. e.g. `https://dogtext.vercel.app` or your custom domain. |
+| `OPENAI_API_KEY` | platform.openai.com | Without it, `/api/chat`, `/api/generate-dog-messages`, and `/api/daily-bark/*` return 503. Rest of site works. |
+| `ADMIN_EMAILS` | You | Comma-separated, case-insensitive. Set to `lamont1879@gmail.com` so you can use `/admin/celebrations`. |
+| `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` + `AWS_REGION` + `AWS_BUCKET_NAME` + `AWS_FOLDER_PREFIX` | Cloudflare R2 / AWS S3 / Backblaze | Only needed for celebration photo uploads. Skip in v1 if launching without celebrations. |
+
+## Pre-deploy checklist
+
+1. Provision a fresh Postgres database.
+2. `cp .env.example .env.local`, fill in the real values for local dev.
+3. `npx prisma db push` to create the schema (including `daily_barks`).
+4. `npm run build` locally — confirms `prisma generate` runs and the build is green.
+5. Push to GitHub.
+6. On Vercel: Import Project → connect the GitHub repo.
+7. On Vercel: paste each env var into Project Settings → Environment Variables (set for Production + Preview).
+8. Trigger first deploy. Update `NEXTAUTH_URL` to the live URL after, then redeploy.
 
 ## What's already locked down
 
@@ -26,21 +43,9 @@ before any public traffic:
 - `/api/signup` is rate-limited per IP (5/hour) and enforces 8+ char passwords +
   email format.
 - Celebration admin routes (`/api/celebrations/[id]/approve`, `/api/celebrations/pending`,
-  and `DELETE /api/celebrations/[id]`) all share the same `isAdminEmail()` helper.
-
-## Pending DB migration
-
-Daily Bark adds a `daily_barks` table. Schema is in `prisma/schema.prisma`. To enable:
-
-```
-npx prisma db push
-```
-
-Until that runs, `/api/daily-bark/[dogId]` returns 503 and the dashboard cards show
-"Daily Bark is not yet enabled on this database" with a Retry button. The rest of
-the app works normally.
-
-The route also requires a working `ABACUSAI_API_KEY` (see rotation note above).
+  `DELETE /api/celebrations/[id]`) all share the same `isAdminEmail()` helper.
+- `/api/daily-bark/[dogId]` is auth-required and idempotent per dog per day via a
+  unique constraint, so spam-clicking can't burn through OpenAI credits.
 
 ## Known limits of the rate limiter
 
