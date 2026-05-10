@@ -1,8 +1,5 @@
 
 import { PrismaClient } from '@prisma/client';
-import * as fs from 'fs';
-import * as path from 'path';
-import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -21,63 +18,254 @@ function estimateReadingTime(content: string): number {
   return Math.ceil(wordCount / wordsPerMinute);
 }
 
+const breedData = [
+  {
+    name: 'Labrador Retriever',
+    description: 'America\'s most popular dog breed for over three decades. Friendly, outgoing, and high-spirited companions who have more than enough affection to go around for a family looking for a medium-to-large dog.',
+    origin: 'Developed in Newfoundland, Canada in the 1500s as fishermen\'s helpers — retrieving fish and dragging nets. Refined into a sporting breed in 19th-century England.',
+    physicalCharacteristics: 'Medium-to-large athletic build, 55-80 lbs. Short, dense, water-repellent double coat in yellow, black, or chocolate. Otter-like tail and webbed feet make them excellent swimmers. Average lifespan 10-12 years.',
+    temperament: 'Outgoing, even-tempered, gentle, intelligent, and eager to please. Highly social with people and other animals. Patient enough for children, exuberant enough for active adults.',
+    exerciseNeeds: 'High — requires at least 60-90 minutes of daily exercise. Loves swimming, fetching, and running. Without enough activity, they can become destructive or gain weight quickly.',
+    groomingRequirements: 'Moderate. Brush 1-2 times per week to manage their seasonal heavy shedding. Bathe every 2-3 months or as needed. Regular nail trims and ear checks (their floppy ears can trap moisture).',
+    healthConsiderations: 'Prone to hip and elbow dysplasia, exercise-induced collapse, obesity (they\'ll eat anything), and progressive retinal atrophy. Reputable breeders screen for these. Watch food intake carefully.',
+    trainingTips: 'One of the easiest breeds to train — eager, food-motivated, and intelligent. Start early with positive reinforcement. They excel at obedience, agility, scent work, and service work. Channel mouthiness into fetch.',
+    idealLivingConditions: 'Best with active families who can provide a yard and daily exercise. Adapts to apartments only with sufficient daily activity. Thrives on companionship — not a breed to leave alone all day.',
+    sizeCategory: 'large', energyLevel: 'high', groomingLevel: 'moderate', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Golden Retriever',
+    description: 'Friendly, intelligent, and devoted family dogs known for their gleaming gold coats and sunny dispositions. As eager to please as they are easy to love.',
+    origin: 'Developed in 19th-century Scotland by Lord Tweedmouth, who crossed a yellow Retriever with a now-extinct Tweed Water Spaniel to create the ideal hunting companion for the rugged Scottish Highlands.',
+    physicalCharacteristics: 'Medium-large, 55-75 lbs, with a sturdy muscular build. Dense water-repellent double coat in shades from light cream to deep gold. Feathered tail and ears. Average lifespan 10-12 years.',
+    temperament: 'Gentle, affectionate, patient, and reliable. Goldens famously rarely meet a stranger. Deeply bonded to their families and known for emotional intelligence — popular as therapy and service dogs for good reason.',
+    exerciseNeeds: 'High — 60+ minutes daily of active exercise plus mental stimulation. Built for retrieving and swimming. Adolescent Goldens (1-3 years) have especially intense energy needs.',
+    groomingRequirements: 'High. Brush 2-3 times weekly, daily during seasonal shedding (twice a year). Their double coat sheds heavily. Bathe monthly. Trim feathering on ears, legs, and tail. Regular ear cleaning prevents infections.',
+    healthConsiderations: 'Prone to cancer (one of the highest rates of any breed), hip and elbow dysplasia, heart conditions (subvalvular aortic stenosis), and skin allergies. Annual vet checks and a healthy weight extend lifespan.',
+    trainingTips: 'Highly trainable — soft, sensitive, and food-motivated. Use gentle, positive methods; harsh corrections backfire. Start socialization at 8 weeks. They thrive in obedience, agility, dock diving, and therapy work.',
+    idealLivingConditions: 'Best with families who include them as full household members. Need a fenced yard or daily long walks. Don\'t do well isolated — separation can lead to anxiety and destructive behavior.',
+    sizeCategory: 'large', energyLevel: 'high', groomingLevel: 'high', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'German Shepherd',
+    description: 'Confident, courageous, and remarkably intelligent. The all-purpose worker — used as police, military, guide, and search-and-rescue dogs the world over, while also being devoted family companions.',
+    origin: 'Developed in late-1890s Germany by Captain Max von Stephanitz, who sought to create the ideal herding and working dog. Quickly recognized for trainability and versatility, expanded into police and military roles.',
+    physicalCharacteristics: 'Large, athletic, 50-90 lbs. Double coat — medium length, dense, weather-resistant. Most commonly black-and-tan, but also sable, all-black, or all-white. Average lifespan 9-13 years.',
+    temperament: 'Loyal, courageous, alert, and confident. Reserved with strangers but devoted to family. Strong protective instincts that need careful socialization. Bonds deeply with one or two primary handlers.',
+    exerciseNeeds: 'Very high — 90+ minutes daily of physical exercise plus structured mental work. Without enough job-like stimulation, they invent their own jobs (often destructive ones).',
+    groomingRequirements: 'Moderate to high. Brush 3-4 times weekly. They shed heavily year-round and "blow coat" twice yearly. Bathe every 2-3 months. Regular nail trims, dental care, and ear checks.',
+    healthConsiderations: 'Prone to hip and elbow dysplasia, degenerative myelopathy (a spinal condition), bloat (gastric torsion), and certain cancers. Buy from breeders who screen hips, elbows, and DM genetic status.',
+    trainingTips: 'One of the most trainable breeds when started early. Need a confident, consistent handler — not for first-time owners. Excel at advanced obedience, protection sports (Schutzhund/IGP), and scent work.',
+    idealLivingConditions: 'Best in homes with experienced owners and a job for them to do. Need a fenced yard. Not suited for apartment life unless owner is committed to extensive daily exercise and mental work.',
+    sizeCategory: 'large', energyLevel: 'high', groomingLevel: 'moderate', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: false, isPopular: true,
+  },
+  {
+    name: 'French Bulldog',
+    description: 'Adaptable, playful companions with bat ears, smushed faces, and outsized personalities. The Frenchie is now one of the most popular city dogs in the world thanks to a friendly nature and modest exercise needs.',
+    origin: 'Descended from English Bulldogs brought to France by lace-makers in the 1850s, where they were crossed with local terriers and pugs. Became a favorite of Parisian café society in the late 19th century.',
+    physicalCharacteristics: 'Small but solidly built, 16-28 lbs. Smooth short coat in fawn, brindle, white, pied, or cream. Distinctive bat ears, flat brachycephalic face, compact muscular body. Average lifespan 10-12 years.',
+    temperament: 'Affectionate, easy-going, comedic, and surprisingly quiet — they bark less than most small breeds. Bond deeply with their humans and tend to be one-room dogs who follow you everywhere.',
+    exerciseNeeds: 'Low to moderate. Two short walks daily (15-20 min each) plus indoor play. They overheat easily — exercise in cool morning or evening hours, never during summer heat.',
+    groomingRequirements: 'Low. Brush weekly with a rubber mitt. Bathe monthly. Critical: clean facial folds 2-3 times per week to prevent dermatitis. Trim nails frequently — they don\'t wear them down naturally.',
+    healthConsiderations: 'Brachycephalic breed — prone to BOAS (breathing issues), heat stroke, eye problems, skin fold dermatitis, and IVDD (spinal disc disease). Require C-section births. Avoid air travel and hot weather.',
+    trainingTips: 'Intelligent but stubborn. Short, fun, food-motivated sessions work best. Repetition bores them. Early socialization is essential. Prone to selective hearing — make commands worth their while.',
+    idealLivingConditions: 'Excellent apartment dogs. Best in moderate climates — vulnerable to both heat and cold. Need climate-controlled environments and an owner home most of the day.',
+    sizeCategory: 'small', energyLevel: 'low', groomingLevel: 'low', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Poodle',
+    description: 'Astonishingly intelligent, hypoallergenic, and elegant — Poodles come in three sizes (Standard, Miniature, and Toy) and excel at virtually everything from hunting to circus performing to therapy work.',
+    origin: 'Originally developed in Germany as a water retriever (the name comes from German "Pudel" meaning "to splash"), then refined and made famous in France. The breed standard dates to the 15th century.',
+    physicalCharacteristics: 'Standard 45-70 lbs, Miniature 15-20 lbs, Toy 6-9 lbs. Curly, dense, single-layer coat (low shedding). Solid colors include black, white, apricot, silver, and brown. Lifespan 12-15 years.',
+    temperament: 'Brilliantly intelligent, alert, active, and trainable. Affectionate with family, often reserved with strangers. Surprisingly playful and athletic — the show clip masks a serious working dog underneath.',
+    exerciseNeeds: 'Moderate to high (size-dependent). Standards need 60+ min/day; Toys are happy with 30 min plus indoor play. All Poodles need mental work — puzzle toys, training, or sport.',
+    groomingRequirements: 'High. The curly coat needs professional grooming every 4-6 weeks plus daily brushing to prevent matting. Skip the elaborate show clips — pet clips like the "puppy" or "lamb" cut are equally pretty and practical.',
+    healthConsiderations: 'Standards: bloat, hip dysplasia, Addison\'s disease, sebaceous adenitis. Miniatures and Toys: patellar luxation, eye conditions, dental issues. All sizes prone to ear infections from the coat.',
+    trainingTips: 'Among the easiest breeds to train — they pick up commands in just a few repetitions. Need mental challenges to stay happy. Excel at obedience, agility, water work, scent work, and tricks.',
+    idealLivingConditions: 'Adaptable to apartment or home. Standards do best with a yard. Need to be with their people — Poodles dislike isolation. Hypoallergenic coat makes them suitable for many allergy sufferers.',
+    sizeCategory: 'medium', energyLevel: 'high', groomingLevel: 'high', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Bulldog',
+    description: 'Calm, courageous, and friendly. Despite their sour-mug expression and muscular frame, English Bulldogs are gentle, affectionate, and content to lounge around the house with their families.',
+    origin: 'Developed in 13th-century England for the brutal sport of bull-baiting. After the practice was outlawed in 1835, breeders selected for gentler temperaments, transforming the breed into a beloved companion.',
+    physicalCharacteristics: 'Medium, stocky, low-slung — 40-50 lbs. Smooth short coat in brindle, white, fawn, pied, or red. Famous wrinkled face, undershot jaw, and rolling gait. Average lifespan 8-10 years.',
+    temperament: 'Docile, willful, friendly, and loyal. Patient with children and amiable with strangers. Quiet, low-key — happy to nap on the couch most of the day. Stubborn streak that needs gentle persistence.',
+    exerciseNeeds: 'Low. Two short walks daily (20-30 min total). Cannot tolerate heat or strenuous activity. Indoor play is sufficient for many. Watch for overheating — they cannot regulate temperature efficiently.',
+    groomingRequirements: 'Moderate. Weekly brushing. Critical: clean facial folds and tail pocket 3-4 times per week to prevent infection. Wipe eyes daily. Bathe monthly. Trim nails regularly.',
+    healthConsiderations: 'Many. Brachycephalic syndrome, hip dysplasia, heat sensitivity, skin allergies, cherry eye, IVDD, and reproductive challenges (most require C-sections). Pre-purchase vet exams are essential.',
+    trainingTips: 'Slow learners but eventually solid. Short positive sessions with high-value rewards. Stubborn, not stupid — once they decide a command isn\'t worth it, they\'ll dig in. Start early socialization.',
+    idealLivingConditions: 'Excellent apartment dogs and ideal for less-active owners. Need climate control — can\'t live outside or in hot regions without AC. Best with owners home much of the day.',
+    sizeCategory: 'medium', energyLevel: 'low', groomingLevel: 'moderate', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Beagle',
+    description: 'Merry, friendly, curious — Beagles are scent hounds first and foremost, with the nose to prove it. Compact size and easy-going temperament make them popular family dogs, though their voices carry.',
+    origin: 'A scent hound breed developed in England, with origins tracing to small pack hounds used for hare hunting since the 14th century. The modern breed was standardized in the mid-1800s.',
+    physicalCharacteristics: 'Small to medium, 20-30 lbs. Smooth, dense, weatherproof double coat — most commonly tricolor (black, white, tan) but also red and white, lemon, or chocolate. Lifespan 10-15 years.',
+    temperament: 'Cheerful, sociable, food-motivated, and tenacious. Pack-oriented — they love company, both human and canine. Famous howl/bay can be loud. Curious noses lead them into trouble; never trust them off-leash.',
+    exerciseNeeds: 'High. 60+ minutes daily — long walks, scent games, secure-yard romps. Without exercise, they become destructive and obese. Their nose drives them, so include sniff-walks (let them lead with the nose).',
+    groomingRequirements: 'Low. Weekly brushing handles their moderate shedding. Bathe every 1-2 months. Long ears trap moisture and need weekly cleaning to prevent infections. Trim nails regularly.',
+    healthConsiderations: 'Prone to obesity (they\'ll eat anything), epilepsy, hypothyroidism, ear infections, IVDD, and "Beagle pain syndrome" (steroid-responsive meningitis). Watch food intake carefully.',
+    trainingTips: 'Smart but stubborn — once a scent catches their nose, recall is gone. Use high-value treats and short sessions. Crate training is essential. Never trust off-leash; always use a long line.',
+    idealLivingConditions: 'Adaptable but ideal with a fenced yard (high fences — they\'re escape artists). Apartment-friendly with sufficient exercise, but the howl can be a neighbor problem. Thrive with another dog for company.',
+    sizeCategory: 'small', energyLevel: 'high', groomingLevel: 'low', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Rottweiler',
+    description: 'Confident, fearless, and good-natured. Originally Roman drovers\' dogs, today\'s Rottweilers are loyal protectors and devoted companions when properly raised, trained, and socialized.',
+    origin: 'Descended from Roman cattle-droving Mastiffs that traveled across the Alps with legions around 74 AD. The breed took its name from the German town of Rottweil, where it became the butcher\'s dog of choice.',
+    physicalCharacteristics: 'Large to giant, 80-135 lbs. Short, hard, dense double coat — always black with mahogany or rust markings. Powerful muscular build, broad head, and natural bobtail (where legal). Lifespan 9-10 years.',
+    temperament: 'Confident, calm, courageous, and aloof with strangers. Deeply loyal to family. Strong guarding instincts that require thoughtful socialization from puppyhood. Not naturally aggressive — but powerful and serious.',
+    exerciseNeeds: 'High. 60-90 minutes daily of physical and mental work. Love structured activities like obedience, herding trials, weight pull, and tracking. Bored Rotties become destructive and reactive.',
+    groomingRequirements: 'Low. Brush weekly; daily during heavy shedding seasons. Bathe every 2-3 months. Routine nail, dental, and ear care. Their short coat is low-maintenance.',
+    healthConsiderations: 'Prone to hip and elbow dysplasia, osteosarcoma (bone cancer), bloat, aortic stenosis, and progressive retinal atrophy. Lifespan is shorter than many breeds — appreciate every year.',
+    trainingTips: 'Highly trainable but require a confident handler. Need firm, fair, consistent training from 8 weeks. Not for first-time owners. Excel at obedience, protection sports, herding, and therapy work after maturity.',
+    idealLivingConditions: 'House with a fenced yard and an experienced, present owner. Not apartment dogs in most cases. Need to be part of family life — Rotties left in the yard alone become problem dogs.',
+    sizeCategory: 'large', energyLevel: 'moderate', groomingLevel: 'low', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: true, goodWithPets: false, isPopular: false,
+  },
+  {
+    name: 'Yorkshire Terrier',
+    description: 'Tiny but tenacious. Yorkies pack big-dog personality into a 7-pound frame, with silky coats and confidence to spare. Originally bred as ratters, they remain bold, curious companions.',
+    origin: 'Developed in 19th-century Yorkshire, England, by working-class weavers who needed small dogs to control rats in mills. Refined into companion dogs as the breed gained popularity with Victorian gentry.',
+    physicalCharacteristics: 'Toy size, 4-7 lbs. Long, fine, silky single-layer coat (low-shedding) in steel blue and tan. Compact body, alert ears, V-shaped face. Average lifespan 13-16 years.',
+    temperament: 'Bold, confident, affectionate, and feisty. Big personalities in small packages. Devoted to their primary person. Can be territorial and bark-prone without training. Often ignore their own size.',
+    exerciseNeeds: 'Low to moderate. Two 15-20 minute walks daily plus indoor play. Tiny size means short legs cover ground slowly — pace accordingly. Avoid extreme weather; they\'re sensitive to cold.',
+    groomingRequirements: 'High if kept long, moderate if kept in a "puppy cut." Long coats need daily brushing and topknots. Most pet owners keep them in short "puppy" or "schnauzer" cuts requiring grooming every 4-6 weeks.',
+    healthConsiderations: 'Patellar luxation, tracheal collapse (use a harness, never a collar), portosystemic shunt (liver), dental disease (small mouths overcrowd), and hypoglycemia in puppies. Dental cleanings essential.',
+    trainingTips: 'Smart but headstrong. Take house-training seriously — small dogs are notoriously hard to potty-train. Use small high-value treats. Don\'t let cuteness excuse bad behavior; tiny dogs need rules too.',
+    idealLivingConditions: 'Excellent apartment dogs. Indoor pets — too small and fragile for outdoor living. Best in households without rough children or large dogs. Sensitive to cold weather; sweaters help.',
+    sizeCategory: 'toy', energyLevel: 'moderate', groomingLevel: 'high', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: false, goodWithPets: true, isPopular: true,
+  },
+  {
+    name: 'Dachshund',
+    description: 'Bold, lively, clever — Dachshunds were bred to chase badgers underground, and they\'ve never lost the courage of a much larger dog. Available in two sizes (standard and miniature) and three coats (smooth, longhaired, wirehaired).',
+    origin: 'Developed in Germany over centuries (the name means "badger dog") to dig into setts and confront badgers underground. The unique elongated body and short legs are functional, not decorative.',
+    physicalCharacteristics: 'Standard 16-32 lbs, Miniature under 11 lbs. Long body, short legs, deep chest. Three coat varieties; many color and pattern combinations. Lifespan 12-16 years.',
+    temperament: 'Brave, curious, lively, and stubborn. Devoted to family but can be aloof with strangers. Strong prey drive — small animals trigger their hunting instincts. Often vocal, prone to barking.',
+    exerciseNeeds: 'Moderate. Two 20-30 minute walks daily plus play. Avoid jumping on/off furniture and stairs to protect their long backs. Swimming is excellent low-impact exercise.',
+    groomingRequirements: 'Coat-dependent. Smooths: weekly brushing. Longhaireds: 2-3x per week to prevent mats. Wirehaireds: weekly brushing plus stripping or trimming every few months. All need ear cleaning.',
+    healthConsiderations: 'IVDD (intervertebral disc disease) is the major risk — keep them lean, use ramps, never let them jump from heights. Also prone to obesity, dental issues, and patellar luxation.',
+    trainingTips: 'Intelligent but famously stubborn. Short, fun, treat-driven sessions. House-training takes patience. Recall can be unreliable when prey is in sight. Crate training helps with separation.',
+    idealLivingConditions: 'Adaptable to apartment or home. Need stairs minimized or use of ramps. Excellent for owners who want a small dog with a big personality. Generally one-person or one-family dogs.',
+    sizeCategory: 'small', energyLevel: 'moderate', groomingLevel: 'moderate', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: false, goodWithPets: false, isPopular: true,
+  },
+  {
+    name: 'Boxer',
+    description: 'Bright, fun-loving, and active. Boxers are upbeat athletes with a permanent puppyish quality — they take years to mature mentally. Loyal family guardians who love being part of the action.',
+    origin: 'Developed in 19th-century Germany from the now-extinct Bullenbeisser (a boar-hunting breed) crossed with imported English Bulldogs. Used as cattle dogs, hunters, military messengers, and police dogs.',
+    physicalCharacteristics: 'Medium-large, athletic, 50-80 lbs. Smooth short coat in fawn or brindle with white markings. Square jaw with slight underbite, expressive face, muscular build. Lifespan 10-12 years.',
+    temperament: 'Playful, loyal, alert, and patient with children — often called the "Peter Pan" of breeds. Energetic and silly into middle age. Excellent watchdogs without being aggressive.',
+    exerciseNeeds: 'Very high. 90+ minutes daily of vigorous exercise. Without it, they become hyperactive and destructive. Need cool weather for hard play — sensitive to heat due to their flat faces.',
+    groomingRequirements: 'Low. Weekly brushing handles moderate shedding. Bathe every 2-3 months. Wipe facial folds clean. Drool varies by individual; some are heavy droolers.',
+    healthConsiderations: 'Cancer (especially mast cell tumors and lymphoma), aortic and subaortic stenosis, hip dysplasia, hypothyroidism, and bloat. Pre-purchase cardiac screening is essential. Lifespans are sadly short.',
+    trainingTips: 'Smart and eager but stubborn — they\'re thinkers, not blind followers. Positive methods only; harshness shuts them down. Channel mouthiness early. Excel at agility, obedience, and Schutzhund.',
+    idealLivingConditions: 'House with a fenced yard preferred. Apartment-livable with extensive daily exercise. Need cool indoor spaces — not suited for hot climates without AC. Bond deeply, dislike isolation.',
+    sizeCategory: 'large', energyLevel: 'high', groomingLevel: 'low', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: false,
+  },
+  {
+    name: 'Siberian Husky',
+    description: 'Loyal, mischievous, and outgoing. Bred to pull sleds across the Siberian Arctic, Huskies are pack-oriented endurance athletes with stunning blue or multi-colored eyes and fox-like masks.',
+    origin: 'Developed by the Chukchi people of northeastern Siberia over thousands of years as long-distance sled dogs. Imported to Alaska in 1908 for sled-dog racing and gained fame through the 1925 Nome serum run.',
+    physicalCharacteristics: 'Medium, athletic, 35-60 lbs. Thick double coat in many color patterns; almond-shaped eyes can be blue, brown, amber, or "bi-eyed" (different colors). Curled tail. Lifespan 12-14 years.',
+    temperament: 'Friendly, outgoing, mischievous, and free-spirited. Pack-oriented — they love company. Independent thinkers, not naturally obedient. Famous howlers (rarely barkers). Notorious escape artists.',
+    exerciseNeeds: 'Extremely high. 90-120+ minutes daily of vigorous activity. Built for endurance — they need to run. Without enough exercise, they dig, escape, howl, and destroy. Cool weather is their happy place.',
+    groomingRequirements: 'Moderate to high. Brush 2-3 times per week. They "blow coat" twice yearly, shedding handfuls daily for 3-6 weeks. Bathe rarely (every 3-4 months) — their coat self-cleans. Never shave.',
+    healthConsiderations: 'Prone to hip dysplasia, eye conditions (cataracts, progressive retinal atrophy, juvenile cataracts), and zinc deficiency dermatitis. Generally healthy compared to many breeds.',
+    trainingTips: 'Intelligent but independent. Need creative, patient training — they\'ll do something interesting before something obedient. Recall is often unreliable; use long lines. Strong prey drive.',
+    idealLivingConditions: 'Active homes with a securely fenced yard (high, dig-proof). Best in cool climates. Not suited to apartments without serious daily exercise. Happiest with a canine companion.',
+    sizeCategory: 'medium', energyLevel: 'high', groomingLevel: 'high', trainability: 'challenging',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: false,
+  },
+  {
+    name: 'Border Collie',
+    description: 'Affectionate, smart, and energetic. Widely regarded as the most intelligent dog breed in the world. Bred to herd sheep across the Anglo-Scottish border, they are workaholics who need a job.',
+    origin: 'Developed along the Anglo-Scottish border in the 1700-1800s as the ultimate sheep-herding dog. The breed name became official in 1915 after centuries of refinement for working ability over appearance.',
+    physicalCharacteristics: 'Medium, athletic, 30-55 lbs. Two coat varieties (smooth and rough). Most familiar in black-and-white, but accepted in many colors. Intense, focused gaze ("the eye"). Lifespan 12-15 years.',
+    temperament: 'Brilliantly intelligent, energetic, alert, and sensitive. Intensely focused — they herd anything that moves, including children. Bond strongly with one handler. Can be neurotic without enough work.',
+    exerciseNeeds: 'Extreme — 2+ hours daily of physical exercise PLUS substantial mental work. They need a job. Without it, they invent obsessive behaviors (chasing shadows, fence-running, light-spinning).',
+    groomingRequirements: 'Moderate. Brush 2-3 times per week, more during shedding seasons. Bathe every 2-3 months. Their double coat sheds significantly twice yearly. Trim feathering occasionally.',
+    healthConsiderations: 'Prone to hip dysplasia, collie eye anomaly, epilepsy, MDR1 drug sensitivity (test before certain medications), and trapped neutrophil syndrome. Reputable breeders test for these.',
+    trainingTips: 'The most trainable breed in many trainers\' experience — they learn commands in 1-2 repetitions. Need creative challenges. Excel at agility, herding trials, flyball, obedience, and trick training.',
+    idealLivingConditions: 'Active homes with rural/suburban property and an owner who wants a partner in sport, herding, or other work. Not suited to apartments or sedentary households. Need acres of mental stimulation.',
+    sizeCategory: 'medium', energyLevel: 'high', groomingLevel: 'moderate', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: false,
+  },
+  {
+    name: 'Chihuahua',
+    description: 'Tiny, sassy, and devoted. The world\'s smallest breed, Chihuahuas pack outsized personalities into 6-pound bodies and form intense bonds with their chosen humans.',
+    origin: 'Descended from the Techichi, a small companion dog of the ancient Toltec civilization in what is now Mexico. The modern breed was named after the Mexican state of Chihuahua, where it was discovered in the mid-1800s.',
+    physicalCharacteristics: 'Toy size, 2-6 lbs. Two coat varieties (smooth and long). Apple-domed head, large erect ears, expressive eyes. Many colors and patterns. Average lifespan 14-16 years (one of the longest-lived breeds).',
+    temperament: 'Bold, alert, devoted, and often one-person dogs. Loving with their chosen human(s), suspicious of strangers. Brave to the point of foolishness — will challenge dogs many times their size.',
+    exerciseNeeds: 'Low. Two 15-minute walks daily plus indoor play. Tiny legs cover little ground. Very sensitive to cold — sweaters needed below 50°F. Avoid hot pavement on tiny paws.',
+    groomingRequirements: 'Low (smooth) to moderate (long). Smooths need weekly brushing. Long coats need 2-3x weekly brushing. Bathe monthly. Dental care is critical — small mouths develop disease quickly.',
+    healthConsiderations: 'Patellar luxation, hydrocephalus, dental disease, hypoglycemia in puppies, heart conditions (especially mitral valve), and tracheal collapse. The molera (soft spot on the skull) is normal but requires care.',
+    trainingTips: 'Smart and capable but often spoiled into naughtiness. House-training is challenging. Use small treats. Don\'t let small size excuse aggression — socialize early and require manners.',
+    idealLivingConditions: 'Excellent apartment dogs and ideal for first-time small-dog owners (with patience). Best in adult households or with older respectful children. Sensitive to cold; indoor pets only.',
+    sizeCategory: 'toy', energyLevel: 'moderate', groomingLevel: 'low', trainability: 'moderate',
+    familyFriendly: true, goodWithKids: false, goodWithPets: false, isPopular: false,
+  },
+  {
+    name: 'Cavalier King Charles Spaniel',
+    description: 'Affectionate, gentle, and graceful. The Cavalier is the consummate lap dog — a small spaniel with the temperament of a perpetual companion and the soulful eyes to match.',
+    origin: 'Descended from toy spaniels favored by European nobility from the 16th-18th centuries — particularly King Charles II of England, for whom the breed is named. Modern breed standard set in the 1920s.',
+    physicalCharacteristics: 'Small, 13-18 lbs. Silky, moderately-long coat with feathering on ears, chest, legs, and tail. Four color varieties: Blenheim (chestnut/white), tricolor, ruby, and black-and-tan. Lifespan 12-14 years.',
+    temperament: 'Gentle, affectionate, eager to please, and sociable with everyone. One of the most adaptable companion breeds — equally happy on a hike or a couch. Famously good with children, seniors, and other pets.',
+    exerciseNeeds: 'Moderate. 30-60 minutes daily of walks plus indoor play. Adaptable — they\'ll match a sedentary owner or join a hiker. Don\'t over-exercise puppies; growth plates are sensitive.',
+    groomingRequirements: 'Moderate. Brush 2-3 times weekly to prevent mats in feathering. Bathe monthly. Keep ear feathering clean and dry to prevent infections. Trim paw fur. No clipping required.',
+    healthConsiderations: 'Mitral valve disease (very common — most Cavaliers develop it), syringomyelia (a serious neurological condition), hip dysplasia, and patellar luxation. Buy only from breeders doing cardiac and MRI testing.',
+    trainingTips: 'Eager to please and quick to learn — among the easiest small breeds to train. Sensitive to harsh voices; positive methods only. House-training requires consistency. Great therapy and emotional-support dogs.',
+    idealLivingConditions: 'Adaptable to apartment or home, urban or rural. Thrive on companionship — must not be left alone for long stretches. Excellent for first-time owners, seniors, and families.',
+    sizeCategory: 'small', energyLevel: 'moderate', groomingLevel: 'moderate', trainability: 'easy',
+    familyFriendly: true, goodWithKids: true, goodWithPets: true, isPopular: false,
+  },
+];
+
 async function main() {
   console.log('🌱 Starting database seeding...');
 
   try {
-    // Create test user with hashed password
-    const hashedPassword = await bcrypt.hash('johndoe123', 10);
-    const testUser = await prisma.user.upsert({
-      where: { email: 'john@doe.com' },
-      update: {},
-      create: {
-        email: 'john@doe.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: hashedPassword,
-        subscriptionTier: 'PREMIUM', // Give test user premium access
-      },
-    });
-    console.log('✅ Created test user');
-
-    // Read and seed breed profiles
-    const breedProfilesPath = '/home/ubuntu/dog_breed_profiles.json';
-    if (fs.existsSync(breedProfilesPath)) {
-      const breedData = JSON.parse(fs.readFileSync(breedProfilesPath, 'utf8'));
-      
-      for (const breed of breedData) {
-        await prisma.breedProfile.upsert({
-          where: { slug: createSlug(breed.name) },
-          update: {},
-          create: {
-            breedName: breed.name,
-            slug: createSlug(breed.name),
-            description: breed.origin_history + " " + breed.physical_characteristics,
-            origin: breed.origin_history,
-            physicalCharacteristics: breed.physical_characteristics,
-            temperament: breed.temperament,
-            exerciseNeeds: breed.exercise_needs,
-            groomingRequirements: breed.grooming_requirements,
-            healthConsiderations: breed.health_considerations,
-            trainingTips: breed.training_tips,
-            idealLivingConditions: breed.ideal_living_conditions,
-            imageUrl: breed.image_url,
-            imageAlt: `${breed.name} dog breed`,
-            sizeCategory: breed.size_category || 'medium',
-            energyLevel: breed.energy_level || 'moderate',
-            groomingLevel: breed.grooming_level || 'moderate',
-            trainability: breed.trainability || 'moderate',
-            familyFriendly: true,
-            goodWithKids: true,
-            goodWithPets: true,
-            isPopular: ['Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Bulldog', 'Poodle'].includes(breed.name),
-          },
-        });
-      }
-      console.log(`✅ Seeded ${breedData.length} breed profiles`);
-    } else {
-      console.log('⚠️ Breed profiles file not found, skipping breed seeding');
+    // Seed curated breed profiles
+    const breeds = breedData;
+    for (const breed of breeds) {
+      await prisma.breedProfile.upsert({
+        where: { slug: createSlug(breed.name) },
+        update: {},
+        create: {
+          breedName: breed.name,
+          slug: createSlug(breed.name),
+          description: breed.description,
+          origin: breed.origin,
+          physicalCharacteristics: breed.physicalCharacteristics,
+          temperament: breed.temperament,
+          exerciseNeeds: breed.exerciseNeeds,
+          groomingRequirements: breed.groomingRequirements,
+          healthConsiderations: breed.healthConsiderations,
+          trainingTips: breed.trainingTips,
+          idealLivingConditions: breed.idealLivingConditions,
+          imageAlt: `${breed.name} dog breed`,
+          sizeCategory: breed.sizeCategory,
+          energyLevel: breed.energyLevel,
+          groomingLevel: breed.groomingLevel,
+          trainability: breed.trainability,
+          familyFriendly: breed.familyFriendly ?? true,
+          goodWithKids: breed.goodWithKids ?? true,
+          goodWithPets: breed.goodWithPets ?? true,
+          isPopular: breed.isPopular ?? false,
+        },
+      });
     }
+    console.log(`✅ Seeded ${breeds.length} breed profiles`);
 
     // Seed expert articles
     const articles = [
@@ -1534,69 +1722,6 @@ The pain of losing a beloved companion is the price we pay for the joy they brin
       });
     }
     console.log(`✅ Seeded ${articles.length} articles`);
-
-    // Create some sample dogs for the test user
-    const sampleDogs = [
-      {
-        name: 'Buddy',
-        breed: 'Labrador Retriever',
-        age: 3,
-        ageUnit: 'years',
-        weight: 65,
-        weightUnit: 'lbs',
-        gender: 'male',
-        personalityTraits: ['friendly', 'energetic', 'playful'],
-        healthConditions: [],
-      },
-      {
-        name: 'Luna',
-        breed: 'Border Collie',
-        age: 8,
-        ageUnit: 'months',
-        weight: 35,
-        weightUnit: 'lbs',
-        gender: 'female',
-        personalityTraits: ['intelligent', 'active', 'loyal'],
-        healthConditions: [],
-      },
-    ];
-
-    for (const dog of sampleDogs) {
-      const existingDog = await prisma.dog.findFirst({
-        where: { 
-          userId: testUser.id,
-          name: dog.name
-        }
-      });
-      
-      if (!existingDog) {
-        await prisma.dog.create({
-          data: {
-            ...dog,
-            userId: testUser.id,
-          },
-        });
-      }
-    }
-    console.log(`✅ Created sample dogs for test user`);
-
-    // Create user settings for test user
-    await prisma.userSettings.upsert({
-      where: { userId: testUser.id },
-      update: {},
-      create: {
-        userId: testUser.id,
-        emailNotifications: true,
-        marketingEmails: false,
-        weeklyDigest: true,
-        chatPersonality: 'friendly',
-        preferredUnits: 'imperial',
-        timezone: 'America/New_York',
-        language: 'en',
-        themePreference: 'system',
-      },
-    });
-    console.log('✅ Created user settings');
 
     console.log('🎉 Database seeding completed successfully!');
 

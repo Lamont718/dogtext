@@ -38,3 +38,6 @@ prisma/migrations/dev.db*
 # editor
 .vscode
 .idea
+
+.vercel
+.env*.local
