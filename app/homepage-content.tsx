@@ -148,41 +148,43 @@ export default function HomePageContent({ session, featuredArticles, popularBree
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
+              <p className="text-sm font-bold text-white/80 tracking-wider mb-4">
+                A DAILY TEXT FROM YOUR DOG
+              </p>
               <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                What if your dog could tell you how much they love you?
+                Your dog texts you. <span className="block">Every morning.</span>
               </h1>
               <p className="text-xl text-white/95 mb-10 leading-relaxed max-w-xl">
-                We use AI to give voice to your dog's personality - creating messages 
-                that feel like they're really from your furry best friend. Plus everything 
-                you need to give them the best life possible.
+                Free. In their voice. Built from their breed, their quirks, and the
+                life you share. Wake up to a message that actually sounds like them.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-white text-[#FF8C42] hover:bg-white/90 text-lg px-8 py-6 rounded-full font-semibold shadow-xl hover:scale-105 transition-transform"
                   asChild
                 >
-                  <Link href={session ? "/chat" : "/auth/signup"}>
-                    Meet My Dog 🐾
+                  <Link href={session ? '/dashboard' : '/auth/signup'}>
+                    Get tomorrow's text →
                   </Link>
                 </Button>
-                
-                <button 
+
+                <button
                   onClick={() => setShowVideo(true)}
                   className="text-white font-semibold text-lg hover:text-white/90 transition-colors flex items-center justify-center gap-2"
                 >
                   See how it works <Play className="w-5 h-5" />
                 </button>
               </div>
-              
+
               {/* Trust Signals */}
               <div className="flex flex-wrap items-center gap-3 mt-8 text-white/95 text-sm">
-                <span className="flex items-center gap-1">🔒 Your data is private</span>
+                <span className="flex items-center gap-1">✨ Free forever</span>
                 <span>•</span>
-                <span className="flex items-center gap-1">✨ Free to start</span>
+                <span className="flex items-center gap-1">📭 Just your email</span>
                 <span>•</span>
-                <span className="flex items-center gap-1">🐾 Founder-led, in beta</span>
+                <span className="flex items-center gap-1">🔒 No data sold</span>
               </div>
             </motion.div>
 

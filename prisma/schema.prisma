@@ -228,6 +228,7 @@ model DailyBark {
   generatedFor  DateTime  @db.Date  // YYYY-MM-DD UTC, the "day" this bark belongs to
   messageText   String    @db.Text
   viewedAt      DateTime?
+  emailedAt     DateTime?
   shareCount    Int       @default(0)
   createdAt     DateTime  @default(now())
 
