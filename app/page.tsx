@@ -8,7 +8,7 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
   // Get featured content
-  const [featuredArticles, popularBreeds, recentArticles] = await Promise.all([
+  const [featuredArticles, popularBreeds, recentArticles, sampleBarks] = await Promise.all([
     prisma.article.findMany({
       where: { isFeatured: true, isPublished: true },
       select: {
@@ -55,7 +55,19 @@ export default async function HomePage() {
       },
       take: 3,
       orderBy: { publishedAt: 'desc' },
-    })
+    }),
+    prisma.dailyBark
+      .findMany({
+        where: { user: { email: 'samples@dogtext.local' } },
+        select: {
+          id: true,
+          messageText: true,
+          dog: { select: { name: true, breed: true } },
+        },
+        take: 6,
+        orderBy: { createdAt: 'asc' },
+      })
+      .catch(() => []),
   ]);
 
   return (
@@ -65,6 +77,7 @@ export default async function HomePage() {
         featuredArticles={featuredArticles}
         popularBreeds={popularBreeds}
         recentArticles={recentArticles}
+        sampleBarks={sampleBarks}
       />
     </Suspense>
   );

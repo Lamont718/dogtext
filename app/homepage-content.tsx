@@ -36,14 +36,21 @@ import {
 
 import { Article, BreedProfile } from '../types/interfaces';
 
+interface SampleBark {
+  id: string;
+  messageText: string;
+  dog: { name: string; breed: string };
+}
+
 interface HomePageContentProps {
   session: Session | null;
   featuredArticles: Article[];
   popularBreeds: BreedProfile[];
   recentArticles: Article[];
+  sampleBarks: SampleBark[];
 }
 
-export default function HomePageContent({ session, featuredArticles, popularBreeds, recentArticles }: HomePageContentProps) {
+export default function HomePageContent({ session, featuredArticles, popularBreeds, recentArticles, sampleBarks }: HomePageContentProps) {
   const [email, setEmail] = useState('');
   const [showVideo, setShowVideo] = useState(false);
   
@@ -260,6 +267,77 @@ export default function HomePageContent({ session, featuredArticles, popularBree
           </div>
         )}
       </section>
+
+      {/* 1.5 SAMPLE BARKS STRIP — social-proof / share surface */}
+      {sampleBarks.length > 0 && (
+        <section className="py-16 bg-white dark:bg-background border-b border-gray-100 dark:border-gray-800">
+          <div className="container max-w-6xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-10"
+            >
+              <p className="text-sm font-bold text-[#FF8C42] tracking-wider mb-3">
+                SAMPLE BARKS
+              </p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-3">
+                What your dog might text you
+              </h2>
+              <p className="text-base text-[#6B6B6B] dark:text-gray-400 max-w-2xl mx-auto">
+                Real-feeling, breed-flavored, written by our AI. Tap any one to share — or sign up and get one from your own dog tomorrow morning.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {sampleBarks.map((bark, i) => (
+                <motion.div
+                  key={bark.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link
+                    href={`/bark/${bark.id}`}
+                    className="block bg-gradient-to-br from-[#FFF8F0] to-white dark:from-card dark:to-card rounded-2xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1 p-5 border border-gray-100 dark:border-gray-800 h-full"
+                  >
+                    <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-800">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF8C42] to-[#FFB380] flex items-center justify-center text-xl shadow-sm shrink-0">
+                        🐕
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-[#2C2C2C] dark:text-gray-100 truncate">
+                          {bark.dog.name}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">{bark.dog.breed}</div>
+                      </div>
+                    </div>
+                    <p className="text-[15px] text-[#2C2C2C] dark:text-gray-200 leading-relaxed whitespace-pre-line pt-4 line-clamp-6">
+                      {bark.messageText}
+                    </p>
+                    <p className="text-xs text-[#FF8C42] font-semibold mt-4 flex items-center gap-1">
+                      Tap to share <ArrowRight className="w-3 h-3" />
+                    </p>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Button
+                size="lg"
+                className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white px-8 py-6 rounded-full font-semibold shadow-md"
+                asChild
+              >
+                <Link href={session ? '/dashboard' : '/auth/signup'}>
+                  Get one from your dog →
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 2. INTERACTIVE AI DEMO SECTION */}
       <section className="py-20 bg-white dark:bg-background">
