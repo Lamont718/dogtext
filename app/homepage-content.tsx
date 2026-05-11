@@ -190,8 +190,8 @@ export default function HomePageContent({ session, featuredArticles, popularBree
                 <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl"></div>
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
                   <Image
-                    src="/images/hero_child_golden_retriever.jpg"
-                    alt="Child hugging golden retriever"
+                    src="/images/founder_with_coco.jpg"
+                    alt="Lamont's daughter holding Coco, the family's brown poodle"
                     fill
                     className="object-cover"
                     priority
@@ -409,30 +409,13 @@ export default function HomePageContent({ session, featuredArticles, popularBree
       {/* 3. "WHY WE EXIST" SECTION */}
       <section className="py-20 bg-[#FFF8F0] dark:bg-card">
         <div className="container max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-            {/* Left - Image */}
+          <div className="max-w-3xl mx-auto">
+            {/* Story */}
             <motion.div
-              className="lg:col-span-2"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-            >
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl">
-                <Image
-                  src="/images/founder_with_coco.jpg"
-                  alt="Founder's daughter with Coco"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </motion.div>
-
-            {/* Right - Story */}
-            <motion.div
-              className="lg:col-span-3"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              className="text-center"
             >
               <p className="text-sm font-bold text-[#FF8C42] tracking-wider mb-4">
                 OUR STORY
