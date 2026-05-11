@@ -179,7 +179,7 @@ export default function HomePageContent({ session, featuredArticles, popularBree
               </div>
             </motion.div>
 
-            {/* Right Column - 40% */}
+            {/* Right Column - 40% — sample dog text */}
             <motion.div
               className="lg:col-span-2"
               initial={{ opacity: 0, x: 20 }}
@@ -187,15 +187,53 @@ export default function HomePageContent({ session, featuredArticles, popularBree
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl"></div>
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="/images/founder_with_coco.jpg"
-                    alt="Lamont's daughter holding Coco, the family's brown poodle"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+                <div className="absolute inset-0 bg-white/30 rounded-[2rem] blur-2xl"></div>
+                <div className="relative bg-white rounded-[2rem] shadow-2xl p-6 sm:p-7">
+                  {/* Contact header */}
+                  <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF8C42] to-[#FFB380] flex items-center justify-center text-2xl shadow-md">
+                      🐕
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-[#2C2C2C] flex items-center gap-2">
+                        Coco
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      </div>
+                      <div className="text-xs text-gray-500">your dog · just now</div>
+                    </div>
+                  </div>
+
+                  {/* Messages */}
+                  <div className="space-y-3 pt-5">
+                    <div className="text-xs text-gray-400 text-center">Today 7:47 AM</div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8, duration: 0.4 }}
+                      className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 max-w-[88%]"
+                    >
+                      <p className="text-[15px] text-[#2C2C2C] leading-relaxed">
+                        Dad, the squirrel by the window is plotting again. Send help. Or treats. Either works 🐿️
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.4, duration: 0.4 }}
+                      className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 max-w-[88%]"
+                    >
+                      <p className="text-[15px] text-[#2C2C2C] leading-relaxed">
+                        Also — when are you coming home? I miss you. Walk soon? 💛
+                      </p>
+                    </motion.div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 text-center">
+                      ✨ Your dog's first text tomorrow morning
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
