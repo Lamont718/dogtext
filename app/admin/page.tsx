@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
 import { isAdminEmail } from '@/lib/admin';
+import OrderStatusButtons from '@/components/admin/order-status-buttons';
 import { DEMO_BREEDS, type DemoBreedSlug } from '@/lib/dog-voice';
 
 export const dynamic = 'force-dynamic';
@@ -59,6 +60,7 @@ export default async function AdminPage() {
     demoShares,
     demoShareViews,
     bookReservations,
+    orders,
   ] = await Promise.all([
     prisma.user.count({ where: REAL_USER }),
     prisma.user.count({ where: { ...REAL_USER, createdAt: { gte: week } } }),
@@ -100,6 +102,11 @@ export default async function AdminPage() {
       where: { ...REAL_USER, bookReservedAt: { not: null } },
       select: { id: true, email: true, firstName: true, bookReservedAt: true, _count: { select: { dailyBarks: true, kids: true } } },
       orderBy: { bookReservedAt: 'asc' },
+    }),
+    prisma.bookOrder.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      include: { user: { select: { firstName: true, dogs: { take: 1, orderBy: { createdAt: 'asc' }, select: { name: true } } } } },
     }),
   ]);
 
@@ -159,6 +166,40 @@ export default async function AdminPage() {
             {!demoBreeds.length && <li className="text-gray-500">No demo runs yet.</li>}
           </ul>
         </div>
+      </div>
+
+      <div className="rounded-2xl border-2 border-[#FF8C42] bg-white p-5 mb-8">
+        <h2 className="font-semibold text-gray-900 mb-1">Book orders ({orders.length})</h2>
+        <p className="text-sm text-gray-500 mb-3">
+          Paid books. For each: download &apos;pages&apos; and &apos;cover&apos;, order 1 copy at Mixam (8x8 softcover, saddle-stitched)
+          shipped to the address, then mark it.
+        </p>
+        <ul className="text-sm text-gray-700 divide-y divide-gray-100">
+          {orders.map((o) => {
+            const a = (o.shipAddress ?? {}) as Record<string, string | null>;
+            return (
+              <li key={o.id} className="py-3 space-y-1">
+                <div className="flex flex-wrap justify-between gap-2">
+                  <span className="font-semibold">
+                    {o.user.dogs[0]?.name ?? 'Dog'} · {o.letterCount} letters · ${(o.amountTotal / 100).toFixed(2)}
+                  </span>
+                  <span className="text-gray-500">
+                    {o.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })}
+                  </span>
+                </div>
+                <div className="text-gray-600">
+                  {o.shipName} · {[a.line1, a.line2, a.city, a.state, a.postal_code].filter(Boolean).join(', ')} · {o.email}
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <a className="text-[#FF8C42] underline" href={`/api/admin/book-pdf?orderId=${o.id}&part=interior`}>pages</a>
+                  <a className="text-[#FF8C42] underline" href={`/api/admin/book-pdf?orderId=${o.id}&part=cover`}>cover</a>
+                  <OrderStatusButtons id={o.id} status={o.status} />
+                </div>
+              </li>
+            );
+          })}
+          {!orders.length && <li className="py-2 text-gray-500">No orders yet.</li>}
+        </ul>
       </div>
 
       <div className="rounded-2xl border border-[#FFB88C] bg-white p-5 mb-8">

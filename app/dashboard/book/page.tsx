@@ -5,7 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
 import ReserveBookButton from '@/components/book/reserve-book-button';
-import { BOOK_PRICE_USD, FIRST_BOOK_LETTERS } from '@/lib/book';
+import { BOOK_PRICE_USD, BOOK_SHIPPING_USD, FIRST_BOOK_LETTERS, bookOrdersOpen } from '@/lib/book';
+import OrderBookButton from '@/components/book/order-book-button';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Your book | DogText', robots: { index: false } };
@@ -19,7 +20,7 @@ function joinNames(names: string[]): string {
 
 // A preview of the printed book: a cover, then every letter the dog has
 // written, one per page, in order. Printing isn't open yet; parents reserve.
-export default async function BookPage() {
+export default async function BookPage({ searchParams }: { searchParams: { ordered?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect('/auth/login?callbackUrl=/dashboard/book');
 
@@ -27,6 +28,7 @@ export default async function BookPage() {
     where: { id: session.user.id },
     select: {
       bookReservedAt: true,
+      bookOrders: { orderBy: { createdAt: 'desc' }, select: { id: true, status: true, letterCount: true, createdAt: true } },
       kids: { select: { firstName: true }, orderBy: { createdAt: 'asc' } },
       dogs: {
         where: { isActive: true },
@@ -49,6 +51,12 @@ export default async function BookPage() {
   const title = kidNames ? `${dog.name}'s Letters to ${kidNames}` : `${dog.name}'s Letters`;
   const progress = Math.min(100, Math.round((letters.length / FIRST_BOOK) * 100));
   const toGo = Math.max(0, FIRST_BOOK - letters.length);
+  const canOrder = bookOrdersOpen() && letters.length >= FIRST_BOOK;
+  const STATUS: Record<string, string> = {
+    paid: 'Paid. Going to the printer.',
+    sent_to_mixam: 'At the printer.',
+    shipped: 'Shipped. On its way to you.',
+  };
 
   return (
     <div className="min-h-screen bg-[#FFF8F0] py-8 px-4">
@@ -56,6 +64,26 @@ export default async function BookPage() {
         <Link href="/dashboard" className="inline-flex items-center text-sm text-gray-600 hover:text-[#FF8C42] mb-6">
           <ArrowLeft className="w-4 h-4 mr-1" /> Dashboard
         </Link>
+
+        {searchParams.ordered && (
+          <div className="rounded-2xl bg-[#FF8C42] text-white p-5 mb-6">
+            <p className="font-semibold">Thank you! Your book is ordered.</p>
+            <p className="text-white/90 text-sm mt-1">We send it to the printer and it ships to the address you gave. Stripe emailed your receipt.</p>
+          </div>
+        )}
+        {user.bookOrders.length > 0 && (
+          <div className="rounded-2xl bg-white border border-gray-200 p-5 mb-6">
+            <p className="font-semibold text-gray-900 mb-2">Your orders</p>
+            <ul className="text-sm text-gray-700 space-y-1">
+              {user.bookOrders.map((o) => (
+                <li key={o.id} className="flex justify-between gap-3">
+                  <span>{o.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })} · {o.letterCount} letters</span>
+                  <span className="text-gray-500">{STATUS[o.status] ?? o.status}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="rounded-2xl bg-white border border-[#FFB88C] p-5 mb-8">
           <p className="font-semibold text-gray-900">
@@ -105,10 +133,18 @@ export default async function BookPage() {
         <div className="rounded-2xl bg-white border border-gray-200 p-6 text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-2">A real book for your kids</h2>
           <p className="text-gray-600 mb-5">
-            ${BOOK_PRICE_USD} plus shipping, an 8x8 softcover mailed to you: {dog.name}&apos;s photo on the cover, one letter per page. Printing isn&apos;t
-            open yet. Reserve a copy and we&apos;ll email you when it is. You&apos;ll see the price before you pay anything.
+            ${BOOK_PRICE_USD} plus shipping, an 8x8 softcover mailed to you: {dog.name}&apos;s photo on the cover, one letter per page.{' '}
+            {canOrder
+              ? `It holds the ${letters.length} letters written so far.`
+              : bookOrdersOpen()
+                ? `Ordering opens once ${dog.name} has written ${FIRST_BOOK} letters. Reserve a copy now.`
+                : "Printing isn't open yet. Reserve a copy and we'll email you when it is. You'll see the price before you pay anything."}
           </p>
-          <ReserveBookButton reserved={Boolean(user.bookReservedAt)} />
+          {canOrder ? (
+            <OrderBookButton label={`Order the book: $${BOOK_PRICE_USD} + $${BOOK_SHIPPING_USD.toFixed(2)} shipping`} />
+          ) : (
+            <ReserveBookButton reserved={Boolean(user.bookReservedAt)} />
+          )}
         </div>
       </div>
     </div>

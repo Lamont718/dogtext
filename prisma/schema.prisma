@@ -69,6 +69,7 @@ model User {
   dailyBarks       DailyBark[]
   pushSubscriptions PushSubscription[]
   kids             Kid[]
+  bookOrders       BookOrder[]
 
   @@map("users")
 }
@@ -366,4 +367,27 @@ model Kid {
 
   @@index([userId])
   @@map("kids")
+}
+
+// A paid printed book (Stripe Checkout on the shared Our Rose account, tagged
+// metadata.brand = dogtext). Packed by hand: Lamont downloads the Mixam files
+// from /admin and orders it shipped to this address.
+model BookOrder {
+  id              String    @id @default(cuid())
+  userId          String
+  stripeSessionId String    @unique
+  amountTotal     Int       // cents, book + shipping
+  letterCount     Int       // letters in the book when ordered (its first N letters)
+  shipName        String?
+  shipAddress     Json?
+  email           String?
+  status          String    @default("paid") // paid, sent_to_mixam, shipped
+  createdAt       DateTime  @default(now())
+  sentToMixamAt   DateTime?
+  shippedAt       DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@map("book_orders")
 }

@@ -9,3 +9,15 @@ export const FIRST_BOOK_LETTERS = 30;
 // Print spec for Mixam (lib/book-pdf.ts builds the files).
 export const BOOK_TRIM_IN = 8; // 8 x 8 in square
 export const BOOK_BLEED_IN = 0.125; // Mixam's standard bleed on every edge
+
+// Flat US shipping, charged on top at checkout. ⚠ Placeholder until Lamont
+// confirms Mixam's real one-copy shipping cost.
+export const BOOK_SHIPPING_USD = 7.99;
+
+// Checkout is off until BOOK_ORDERS_OPEN=1 is set in Vercel (so nobody pays a
+// guessed shipping price). Until then parents reserve.
+export function bookOrdersOpen(): boolean {
+  return process.env.BOOK_ORDERS_OPEN === '1';
+}
+
+export const cents = (usd: number) => Math.round(usd * 100);

@@ -245,7 +245,7 @@ export async function buildCoverPdf(input: BookInput): Promise<Uint8Array> {
 }
 
 /** Loads a family's book from the database (their first dog, all its letters). */
-export async function loadBookInput(userId: string): Promise<BookInput | null> {
+export async function loadBookInput(userId: string, maxLetters?: number): Promise<BookInput | null> {
   const { prisma } = await import('./db');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -265,6 +265,8 @@ export async function loadBookInput(userId: string): Promise<BookInput | null> {
     where: { dogId: dog.id },
     orderBy: { generatedFor: 'asc' },
     select: { generatedFor: true, messageText: true },
+    // An order's book is its first N letters, even if more have come since.
+    ...(maxLetters ? { take: maxLetters } : {}),
   });
   return {
     dogName: dog.name,
