@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
-import { Share2, MessageCircle, Sparkles, RefreshCcw } from 'lucide-react';
-import { toast } from 'sonner';
+import { MessageCircle, Sparkles, RefreshCcw } from 'lucide-react';
+import ShareBarkButton from '../bark/share-bark-button';
 
 interface BarkResponse {
   id: string | null;
@@ -58,30 +58,6 @@ export default function DailyBarkCard({
       cancelled = true;
     };
   }, [dogId]);
-
-  const onShare = async () => {
-    if (!bark?.id) return;
-    const url = `${window.location.origin}/bark/${bark.id}`;
-    const shareData = {
-      title: `${dogName} sent a text`,
-      text: bark.messageText,
-      url,
-    };
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch {
-        // user cancelled — fall through to copy
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied — paste anywhere.');
-    } catch {
-      toast.error('Could not copy link. Try again.');
-    }
-  };
 
   return (
     <Card className="border-0 shadow-lg overflow-hidden bg-gradient-to-br from-[#FFF8F0] to-white">
@@ -148,10 +124,7 @@ export default function DailyBarkCard({
 
                 <div className="flex flex-wrap items-center gap-2 mt-3">
                   {bark.id && !bark.ephemeral && (
-                    <Button size="sm" variant="outline" onClick={onShare}>
-                      <Share2 className="w-3 h-3 mr-2" />
-                      Share
-                    </Button>
+                    <ShareBarkButton barkId={bark.id} dogName={dogName} />
                   )}
                   <Button asChild size="sm" variant="outline">
                     <Link href={`/chat?dog=${dogId}`}>

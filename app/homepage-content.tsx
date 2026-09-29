@@ -345,7 +345,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
       )}
 
       {/* 2. INTERACTIVE AI DEMO SECTION */}
-      <section className="py-20 bg-white dark:bg-background">
+      <section id="try" className="py-20 bg-white dark:bg-background scroll-mt-16">
         <div className="container max-w-4xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

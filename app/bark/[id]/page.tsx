@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { Heart, Sparkles } from 'lucide-react';
+import ShareBarkButton from '@/components/bark/share-bark-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -92,23 +93,24 @@ export default async function PublicBarkPage({ params }: { params: { id: string 
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#FFB88C] to-[#FFB6C1] text-white p-6 rounded-3xl rounded-tl-sm shadow-md mb-6">
-            <p className="text-xl leading-relaxed font-medium">{bark.messageText}</p>
+          <div className="bg-gray-100 rounded-3xl rounded-tl-md px-6 py-5 mb-5">
+            <p className="text-xl leading-relaxed text-[#2C2C2C]">{bark.messageText}</p>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-4">
-              Get a daily message like this from your own dog.
+          <ShareBarkButton barkId={bark.id} dogName={bark.dog.name} className="justify-center mb-8" />
+
+          <div className="text-center border-t border-gray-100 pt-8">
+            <p className="text-lg font-semibold text-gray-900 mb-1">What would your dog text you?</p>
+            <p className="text-sm text-gray-600 mb-5">
+              Tell us their name, breed and personality. See three texts in seconds.
             </p>
             <Link
-              href="/auth/signup"
+              href="/#try"
               className="inline-block bg-[#FF8C42] hover:bg-[#FF6B1A] text-white font-semibold px-6 py-3 rounded-full transition-colors shadow-md"
             >
-              Try DogText free
+              Try it with your dog
             </Link>
-            <p className="text-xs text-gray-400 mt-3">
-              Free forever — 5 chats a week, plus a daily bark.
-            </p>
+            <p className="text-xs text-gray-400 mt-3">Free. A new text from your dog every morning.</p>
           </div>
         </div>
 
