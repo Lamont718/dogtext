@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
       email: true,
       firstName: true,
       settings: { select: { timezone: true, emailNotifications: true } },
+      kids: { select: { firstName: true, age: true }, orderBy: { createdAt: 'asc' } },
       _count: { select: { pushSubscriptions: true } },
       dogs: {
         where: { isActive: true },
@@ -94,6 +95,7 @@ export async function GET(req: NextRequest) {
         breedProfile,
         recentUserMessage,
         date: today,
+        kids: user.kids,
       });
 
       if (!messageText) {

@@ -66,6 +66,7 @@ model User {
   celebrations     Celebration[]
   dailyBarks       DailyBark[]
   pushSubscriptions PushSubscription[]
+  kids             Kid[]
 
   @@map("users")
 }
@@ -347,4 +348,20 @@ model SharedText {
   createdAt DateTime @default(now())
 
   @@map("shared_texts")
+}
+
+// A child the family dog writes to. Parents enter first names (and an
+// optional age for reading level) themselves; nothing is collected from the
+// children, and no photos of them.
+model Kid {
+  id        String   @id @default(cuid())
+  userId    String
+  firstName String
+  age       Int?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("kids")
 }

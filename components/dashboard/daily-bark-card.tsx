@@ -8,6 +8,7 @@ import { Card, CardContent } from '../ui/card';
 import { MessageCircle, Sparkles, RefreshCcw, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import ShareBarkButton from '../bark/share-bark-button';
+import ReadAloudButton from './read-aloud-button';
 import { sendToDog } from '../../lib/send-to-dog';
 
 interface BarkResponse {
@@ -103,7 +104,7 @@ export default function DailyBarkCard({
               <span className="text-sm font-semibold text-gray-900">{dogName}</span>
               <span className="text-xs text-gray-500">· {dogBreed}</span>
               <span className="ml-auto text-xs font-medium text-[#FF8C42] inline-flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Daily Bark
+                <Sparkles className="w-3 h-3" /> Today&apos;s letter
               </span>
             </div>
 
@@ -152,6 +153,7 @@ export default function DailyBarkCard({
                   {bark.id && !bark.ephemeral && (
                     <ShareBarkButton barkId={bark.id} dogName={dogName} />
                   )}
+                  <ReadAloudButton text={bark.messageText} />
                   <span className="ml-auto text-xs text-gray-400">
                     {/* generatedFor is a date-only UTC day; read it as UTC or it shows yesterday in the US. */}
                     {new Date(bark.generatedFor).toLocaleDateString('en-US', {

@@ -16,6 +16,7 @@ import {
   type PendingDog,
   clearPendingDog,
   readPendingDog,
+  parseKidNames,
 } from '../../../lib/dog-voice';
 
 export default function SignupPage() {
@@ -26,6 +27,7 @@ export default function SignupPage() {
   const [dogName, setDogName] = useState('');
   const [breed, setBreed] = useState('');
   const [traits, setTraits] = useState<string[]>([]);
+  const [kidNames, setKidNames] = useState('');
   // The dog from the homepage demo, shown as a summary instead of empty fields.
   const [demoDog, setDemoDog] = useState<PendingDog | null>(null);
   // Came from 'Join the list' on the pricing page.
@@ -50,6 +52,7 @@ export default function SignupPage() {
     setDogName(pending.dogName);
     setBreed((SIGNUP_BREEDS as readonly string[]).includes(pending.breed) ? pending.breed : 'Other');
     setTraits(pending.traits.slice(0, 3));
+    if (pending.kids?.length) setKidNames(pending.kids.join(', '));
     setFirstName((current) => current || pending.ownerName);
   }, []);
 
@@ -80,6 +83,7 @@ export default function SignupPage() {
           email,
           password,
           dog: { name: dogName, breed, traits },
+          kids: parseKidNames(kidNames),
           ...(plan ? { plan } : {}),
           source: fromDemo ? 'demo' : plan ? 'plan' : 'direct',
         }),
@@ -193,6 +197,22 @@ export default function SignupPage() {
                 </div>
               </div>
             )}
+
+            <div>
+              <Label htmlFor="kidNames">Your kids&apos; first names</Label>
+              <Input
+                id="kidNames"
+                type="text"
+                value={kidNames}
+                onChange={(e) => setKidNames(e.target.value)}
+                placeholder="Maya, Leo"
+                maxLength={120}
+                disabled={isLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                {dogName.trim() || 'Your dog'} writes to them every day. First names only.
+              </p>
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>

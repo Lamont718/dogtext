@@ -84,6 +84,17 @@ export interface PendingDog {
   dogName: string;
   breed: string; // display name
   traits: string[];
+  /** Children's first names typed into the demo. */
+  kids?: string[];
+}
+
+/** "Maya, Leo and Ava" / "Maya & Leo" -> ["Maya", "Leo", "Ava"]. At most 6. */
+export function parseKidNames(input: string): string[] {
+  return input
+    .split(/,|&|\band\b|\n/i)
+    .map((n) => n.trim().replace(/\s+/g, ' '))
+    .filter((n) => n.length > 0 && n.length <= 30)
+    .slice(0, 6);
 }
 
 const PENDING_KEY = 'dogtext:pendingDog';
@@ -107,6 +118,7 @@ export function readPendingDog(): PendingDog | null {
       dogName: d.dogName,
       breed: d.breed,
       traits: Array.isArray(d.traits) ? d.traits.filter((t: unknown) => typeof t === 'string') : [],
+      kids: Array.isArray(d.kids) ? d.kids.filter((k: unknown) => typeof k === 'string').slice(0, 6) : [],
     };
   } catch {
     return null;
@@ -119,4 +131,53 @@ export function clearPendingDog(): void {
   } catch {
     // nothing to clear
   }
+}
+
+// Letters to children, read aloud by a parent. Same deadpan dog, kid-safe.
+
+// One small thing from a dog's day per letter, picked by date so letters
+// don't all land on the same couch.
+export const KID_TOPICS = [
+  'their backpack', 'bath time', 'breakfast', 'their shoes', 'a drawing on the fridge', 'homework',
+  'bedtime', 'the doorbell', 'the mail carrier', 'the vacuum', 'a sock', 'the laundry basket',
+  'rain on the window', 'a car ride', "the neighbor's cat", 'a new smell', 'their favorite toy',
+  'the couch cushions', 'a bird outside', 'the snack cabinet', 'the front door', 'their bed',
+  'a puddle', 'the weekend', 'the kitchen floor', 'a ball', 'their jacket', 'the stairs',
+];
+
+export function kidTopicFor(dogName: string, date: Date): string {
+  const key = dogName + date.toISOString().slice(0, 10);
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return KID_TOPICS[h % KID_TOPICS.length];
+}
+
+/** The letter-writing guide with THIS family's children in the examples, so no other names leak in. */
+export function kidVoiceGuide(kidNames: string[], topic: string): string {
+  const a = kidNames[0] || 'Sam';
+  const both = kidNames.length > 1 ? kidNames.slice(0, -1).join(', ') + ' and ' + kidNames[kidNames.length - 1] : a;
+  return `This letter is read aloud by a parent to the children. Write it for them.
+
+The voice (same dog, same deadpan seriousness, now talking to kids). These show the style only; the events never happened:
+- "${a}. I guarded your backpack all day. Nobody took it. You're welcome. Also, there was a crumb in it. I handled the crumb."
+- "${both}. The bathtub made the loud noise again. I was brave. I was under the bed, but I was brave. Please check on the bathtub after school."
+- "${both}. I have counted your shoes. There are eleven. One is missing. I am on the case."
+
+Today's letter is about: ${topic}. Make it about that, not the couch or leaves.
+
+Your personality changes HOW you write:
+- energetic: SHORT ALL-CAPS bursts, can't sit still
+- goofy / silly: gets a simple thing confidently wrong
+- calm / gentle: few words, cozy, dry
+- protective: reports like a guard ("Report:", "All clear.")
+- smart: makes a plan, uses one big word slightly wrong
+- cuddly / loyal / friendly: counts the minutes until they're home
+
+Rules:
+- Start with the children's names exactly as given: ${both}. Use no other names.
+- 2 to 4 short sentences, under 280 characters. Words a five-year-old knows (match the youngest child's age if given).
+- Warm: the dog loves them and is on their side. Say "I love you" at most every few letters; usually show it instead.
+- Never: anything scary or sad (monsters, getting lost, getting hurt, the vet, storms as danger, strangers, death, being left), anything gross beyond a crumb, anything a parent would need to explain.
+- Never tell the kids to do anything (open doors, share food, go outside, keep secrets from grown-ups). Never ask where they live, their school, or anything personal.
+- No puns, no greeting-card lines. At most one emoji; usually none.`;
 }

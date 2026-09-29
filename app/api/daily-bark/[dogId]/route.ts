@@ -44,7 +44,7 @@ export async function GET(
     const [user, breedProfile, recentUserMessage] = await Promise.all([
       prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { firstName: true },
+        select: { firstName: true, kids: { select: { firstName: true, age: true }, orderBy: { createdAt: 'asc' } } },
       }),
       prisma.breedProfile.findFirst({
         where: { breedName: { contains: dog.breed, mode: 'insensitive' } },
@@ -63,6 +63,7 @@ export async function GET(
       breedProfile,
       recentUserMessage,
       date: today,
+      kids: user?.kids ?? [],
     });
 
     if (!messageText) {

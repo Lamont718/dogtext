@@ -16,6 +16,8 @@ const Body = z.object({
   // Joined from the pricing page: put them on that plan's list.
   plan: z.enum(['PREMIUM', 'FAMILY']).optional(),
   source: z.enum(['demo', 'plan', 'direct']).optional(),
+  // Children the dog writes to: first names only, entered by the parent.
+  kids: z.array(z.string().trim().min(1).max(30)).max(6).default([]),
   dog: z.object({
     name: z.string().trim().min(1).max(30),
     breed: z.enum(SIGNUP_BREEDS),
@@ -76,6 +78,7 @@ export async function POST(request: NextRequest) {
         signupSource: parsed.source ?? 'direct',
         ...(parsed.plan ? { interestedPlan: parsed.plan, interestedAt: new Date() } : {}),
         settings: { create: {} },
+        kids: { create: parsed.kids.map((firstName) => ({ firstName })) },
         dogs: {
           create: {
             name: parsed.dog.name,

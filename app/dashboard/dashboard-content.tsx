@@ -24,6 +24,7 @@ import {
 import DogProfileForm from '../../components/dogs/dog-profile-form';
 import DailyBarkCard from '../../components/dashboard/daily-bark-card';
 import NotifyCard from '../../components/dashboard/notify-card';
+import KidsCard from '../../components/dashboard/kids-card';
 import { PawChatIllustration } from '../../components/illustrations/empty-state';
 
 import { Dog, User, MessageUsage } from '../../types/interfaces';
@@ -36,6 +37,8 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ dogs, user, messageUsage }: DashboardContentProps) {
   const [showAddDogForm, setShowAddDogForm] = useState(false);
+  // Bumped when the kids change: today's letter is rewritten for them.
+  const [letterVersion, setLetterVersion] = useState(0);
   const [editingDog, setEditingDog] = useState<Dog | null>(null);
 
   if (!user) return null;
@@ -122,16 +125,16 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Today's barks</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Today&apos;s letter</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                One short message from each of your dogs, every morning.
+                A new one every morning. Read it aloud at breakfast or bedtime.
               </p>
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {dogs.map((dog) => (
               <DailyBarkCard
-                key={dog.id}
+                key={`${dog.id}-${letterVersion}`}
                 dogId={dog.id}
                 dogName={dog.name}
                 dogBreed={dog.breed}
@@ -139,7 +142,8 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
               />
             ))}
           </div>
-          <div className="mt-4">
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <KidsCard dogName={dogs[0].name} onChange={() => setLetterVersion((v) => v + 1)} />
             <NotifyCard dogName={dogs[0].name} />
           </div>
         </div>
