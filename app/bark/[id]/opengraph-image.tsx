@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { prisma } from '@/lib/db';
-import { BarkCard, WIDE_SIZE } from '@/lib/bark-card';
+import { BarkCard, WIDE_SIZE, loadCardFonts } from '@/lib/bark-card';
 
 export const runtime = 'nodejs';
 export const contentType = 'image/png';
@@ -15,6 +15,7 @@ export default async function OgImage({ params }: { params: { id: string } }) {
     })
     .catch(() => null);
 
+  const fonts = await loadCardFonts();
   return new ImageResponse(
     (
       <BarkCard
@@ -24,6 +25,6 @@ export default async function OgImage({ params }: { params: { id: string } }) {
         message={bark?.messageText ?? "I'd text you, but nobody has signed me up yet."}
       />
     ),
-    { ...size, emoji: 'twemoji' }
+    { ...size, emoji: 'twemoji', ...(fonts.length ? { fonts } : {}) }
   );
 }

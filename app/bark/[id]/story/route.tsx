@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { prisma } from '@/lib/db';
-import { BarkCard, STORY_SIZE } from '@/lib/bark-card';
+import { BarkCard, STORY_SIZE, loadCardFonts } from '@/lib/bark-card';
 
 export const runtime = 'nodejs';
 
@@ -16,6 +16,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   if (!bark) return new Response('Not found', { status: 404 });
 
+  const fonts = await loadCardFonts();
   const image = new ImageResponse(
     (
       <BarkCard
@@ -25,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
         message={bark.messageText}
       />
     ),
-    { ...STORY_SIZE, emoji: 'twemoji' }
+    { ...STORY_SIZE, emoji: 'twemoji', ...(fonts.length ? { fonts } : {}) }
   );
 
   const fileName = `${bark.dog.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'dog'}-text.png`;

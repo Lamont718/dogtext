@@ -6,6 +6,31 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://dogtext-ta
 export const SITE_HOST = SITE_URL.replace(/^https?:\/\//, '');
 
 export const STORY_SIZE = { width: 1080, height: 1920 };
+
+// The site's own fonts: Poppins for headings, Inter for the text itself.
+// Fetched once per server instance; if the font CDN is down the card still
+// renders in the built-in font rather than failing.
+const FONT_BASE = 'https://cdn.jsdelivr.net/fontsource/fonts';
+let fontsPromise: Promise<CardFont[]> | null = null;
+
+type CardFont = { name: string; data: ArrayBuffer; weight: 400 | 700; style: 'normal' };
+
+export function loadCardFonts(): Promise<CardFont[]> {
+  fontsPromise ??= Promise.all(
+    [
+      ['Poppins', 'poppins@latest/latin-700-normal.woff', 700],
+      ['Inter', 'inter@latest/latin-400-normal.woff', 400],
+    ].map(async ([name, path, weight]) => {
+      const res = await fetch(`${FONT_BASE}/${path}`);
+      if (!res.ok) throw new Error(`font ${res.status}`);
+      return { name, data: await res.arrayBuffer(), weight, style: 'normal' } as CardFont;
+    }),
+  ).catch(() => {
+    fontsPromise = null; // try again on the next request
+    return [];
+  });
+  return fontsPromise;
+}
 export const WIDE_SIZE = { width: 1200, height: 630 };
 
 interface BarkCardProps {
@@ -32,11 +57,11 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
         justifyContent: 'space-between',
         background: 'linear-gradient(160deg, #FF8C42 0%, #FFB380 55%, #FFB6C1 100%)',
         padding: story ? '120px 72px 110px' : '40px 64px',
-        fontFamily: 'sans-serif',
+        fontFamily: 'Inter, sans-serif',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, color: 'white' }}>
-        <div style={{ fontSize: story ? 44 : 28, fontWeight: 800, letterSpacing: 1 }}>DogText</div>
+        <div style={{ fontFamily: 'Poppins', fontSize: story ? 48 : 30, fontWeight: 700 }}>DogText</div>
       </div>
 
       <div
@@ -70,13 +95,14 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
               justifyContent: 'center',
               color: 'white',
               fontSize: story ? 52 : 30,
-              fontWeight: 800,
+              fontFamily: 'Poppins',
+              fontWeight: 700,
             }}
           >
             {dogName.charAt(0).toUpperCase()}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: story ? 48 : 30, fontWeight: 700, color: '#2C2C2C' }}>{dogName}</div>
+            <div style={{ fontFamily: 'Poppins', fontSize: story ? 48 : 30, fontWeight: 700, color: '#2C2C2C' }}>{dogName}</div>
             <div style={{ fontSize: story ? 30 : 20, color: '#888' }}>
               {dogBreed ? `your dog · ${dogBreed}` : 'your dog'}
             </div>
@@ -108,6 +134,7 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
             fontSize,
             lineHeight: 1.35,
             color: '#2C2C2C',
+            whiteSpace: 'pre-line',
           }}
         >
           {text}
@@ -119,12 +146,17 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
           display: 'flex',
           flexDirection: story ? 'column' : 'row',
           alignItems: 'center',
-          gap: story ? 12 : 16,
-          color: 'white',
+          gap: story ? 6 : 14,
+          background: 'white',
+          borderRadius: 999,
+          padding: story ? '28px 64px' : '12px 32px',
+          boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
         }}
       >
-        <div style={{ fontSize: story ? 46 : 26, fontWeight: 800 }}>Get texts from your dog</div>
-        <div style={{ fontSize: story ? 34 : 22, opacity: 0.95 }}>{SITE_HOST}</div>
+        <div style={{ fontFamily: 'Poppins', fontSize: story ? 44 : 24, fontWeight: 700, color: '#FF8C42' }}>
+          Get texts from your dog
+        </div>
+        <div style={{ fontSize: story ? 32 : 20, color: '#6B6B6B' }}>{SITE_HOST}</div>
       </div>
     </div>
   );
