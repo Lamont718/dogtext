@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
-import { MessageCircle, Sparkles, RefreshCcw } from 'lucide-react';
+import { MessageCircle, Sparkles, RefreshCcw, Send } from 'lucide-react';
+import { toast } from 'sonner';
 import ShareBarkButton from '../bark/share-bark-button';
+import { sendToDog } from '../../lib/send-to-dog';
 
 interface BarkResponse {
   id: string | null;
@@ -32,6 +34,30 @@ export default function DailyBarkCard({
   const [bark, setBark] = useState<BarkResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  // Texting back, right under the morning text.
+  const [draft, setDraft] = useState('');
+  const [sent, setSent] = useState<string | null>(null);
+  const [reply, setReply] = useState('');
+  const [replying, setReplying] = useState(false);
+
+  const onReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text || replying) return;
+    setDraft('');
+    setSent(text);
+    setReply('');
+    setReplying(true);
+    try {
+      setReply(await sendToDog(dogId, text, setReply));
+    } catch (err) {
+      setSent(null);
+      setDraft(text);
+      toast.error(err instanceof Error ? err.message : 'Failed to send');
+    } finally {
+      setReplying(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -126,12 +152,6 @@ export default function DailyBarkCard({
                   {bark.id && !bark.ephemeral && (
                     <ShareBarkButton barkId={bark.id} dogName={dogName} />
                   )}
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/chat?dog=${dogId}`}>
-                      <MessageCircle className="w-3 h-3 mr-2" />
-                      Reply in chat
-                    </Link>
-                  </Button>
                   <span className="ml-auto text-xs text-gray-400">
                     {/* generatedFor is a date-only UTC day; read it as UTC or it shows yesterday in the US. */}
                     {new Date(bark.generatedFor).toLocaleDateString('en-US', {
@@ -142,6 +162,50 @@ export default function DailyBarkCard({
                     })}
                   </span>
                 </div>
+
+                {sent && (
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-end">
+                      <div className="max-w-[85%] bg-[#FF8C42] text-white rounded-2xl rounded-br-md px-4 py-2 text-[15px]">
+                        {sent}
+                      </div>
+                    </div>
+                    <div className="max-w-[85%] bg-white border border-gray-100 rounded-2xl rounded-bl-md px-4 py-2 text-[15px] text-gray-900 whitespace-pre-line shadow-sm">
+                      {reply || <span className="text-gray-400 italic">{dogName} is typing…</span>}
+                    </div>
+                  </div>
+                )}
+
+                {bark.id && !bark.ephemeral && (
+                  sent && !replying ? (
+                    <Link
+                      href={`/chat?dog=${dogId}`}
+                      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-[#FF8C42] hover:text-[#FF6B1A]"
+                    >
+                      <MessageCircle className="w-4 h-4" /> Keep texting {dogName}
+                    </Link>
+                  ) : (
+                    <form onSubmit={onReply} className="mt-4 flex gap-2">
+                      <input
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        placeholder={`Text ${dogName} back…`}
+                        maxLength={1000}
+                        disabled={replying}
+                        className="flex-1 h-10 rounded-full border border-gray-200 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF8C42]/40"
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={replying || !draft.trim()}
+                        className="h-10 w-10 p-0 rounded-full bg-[#FF8C42] hover:bg-[#FF6B1A] text-white"
+                        aria-label="Send"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </form>
+                  )
+                )}
               </>
             )}
           </div>
