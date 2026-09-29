@@ -98,7 +98,7 @@ export default async function AdminPage() {
     prisma.sharedText.aggregate({ _sum: { views: true } }),
     prisma.user.findMany({
       where: { ...REAL_USER, bookReservedAt: { not: null } },
-      select: { email: true, firstName: true, bookReservedAt: true, _count: { select: { dailyBarks: true, kids: true } } },
+      select: { id: true, email: true, firstName: true, bookReservedAt: true, _count: { select: { dailyBarks: true, kids: true } } },
       orderBy: { bookReservedAt: 'asc' },
     }),
   ]);
@@ -163,12 +163,16 @@ export default async function AdminPage() {
 
       <div className="rounded-2xl border border-[#FFB88C] bg-white p-5 mb-8">
         <h2 className="font-semibold text-gray-900 mb-1">Book reservations ({bookReservations.length})</h2>
-        <p className="text-sm text-gray-500 mb-3">Parents who want the printed book of their dog&apos;s letters. Email them the price when printing opens.</p>
+        <p className="text-sm text-gray-500 mb-3">Parents who want the printed book. &apos;pages&apos; and &apos;cover&apos; download the two Mixam files (8x8 softcover, saddle-stitched, 0.125in bleed).</p>
         <ul className="text-sm text-gray-700 space-y-1">
           {bookReservations.map((b) => (
             <li key={b.email} className="flex justify-between gap-4">
               <span className="truncate">{b.firstName ? `${b.firstName} · ` : ''}{b.email}</span>
-              <span className="shrink-0 text-gray-500">{b._count.dailyBarks} letters · {b._count.kids} kids</span>
+              <span className="shrink-0 text-gray-500">
+                {b._count.dailyBarks} letters · {b._count.kids} kids ·{' '}
+                <a className="text-[#FF8C42] underline" href={`/api/admin/book-pdf?userId=${b.id}&part=interior`}>pages</a>{' '}
+                <a className="text-[#FF8C42] underline" href={`/api/admin/book-pdf?userId=${b.id}&part=cover`}>cover</a>
+              </span>
             </li>
           ))}
           {!bookReservations.length && <li className="text-gray-500">Nobody yet.</li>}

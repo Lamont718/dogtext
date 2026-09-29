@@ -4,7 +4,7 @@ import { BOOK_PRICE_USD, FIRST_BOOK_LETTERS } from '@/lib/book';
 
 export const metadata = {
   title: "The Book | DogText",
-  description: `Your dog's letters to your kids, printed and bound: the dog's photo on the cover, one letter per page. $${BOOK_PRICE_USD}. The daily letters are free.`,
+  description: `Your dog's letters to your kids, printed and bound: the dog's photo on the cover, one letter per page. ${BOOK_PRICE_USD} plus shipping. The daily letters are free.`,
 };
 
 // What DogText sells: the printed book of the dog's letters. Everything else is free.
@@ -25,7 +25,7 @@ export default function BookInfoPage() {
         {[
           { icon: BookOpen, title: 'One letter per page', body: `Every letter your dog wrote to your kids, dated and signed. The first book is ${FIRST_BOOK_LETTERS} letters: a month.` },
           { icon: Heart, title: "Your dog's photo on the cover", body: "\"Coco's Letters to Maya and Leo.\" Their names, your dog, your year." },
-          { icon: Printer, title: 'Printed and mailed to you', body: 'A hardcover, printed by Mixam and shipped to your door.' },
+          { icon: Printer, title: 'Printed and mailed to you', body: 'An 8x8 softcover, printed by Mixam and shipped to your door.' },
           { icon: Gift, title: 'A keepsake, or a gift', body: 'For the kids, for grandparents, for the day the dog is old and gray.' },
         ].map(({ icon: Icon, title, body }) => (
           <div key={title} className="rounded-2xl border border-gray-200 bg-white p-5">
@@ -38,6 +38,7 @@ export default function BookInfoPage() {
 
       <div className="rounded-2xl bg-[#FFF8F0] p-8 text-center">
         <p className="text-5xl font-bold text-gray-900">${BOOK_PRICE_USD}</p>
+        <p className="text-gray-500 mt-1">plus shipping</p>
         <p className="text-gray-600 mt-2 mb-6">
           Printing opens soon. Start the free letters now, and reserve your book from the dashboard once your
           dog has written a few. You&apos;ll see the final price before you pay anything.

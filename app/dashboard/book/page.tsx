@@ -105,7 +105,7 @@ export default async function BookPage() {
         <div className="rounded-2xl bg-white border border-gray-200 p-6 text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-2">A real book for your kids</h2>
           <p className="text-gray-600 mb-5">
-            ${BOOK_PRICE_USD}, printed and mailed to you: {dog.name}&apos;s photo on the cover, one letter per page. Printing isn&apos;t
+            ${BOOK_PRICE_USD} plus shipping, an 8x8 softcover mailed to you: {dog.name}&apos;s photo on the cover, one letter per page. Printing isn&apos;t
             open yet. Reserve a copy and we&apos;ll email you when it is. You&apos;ll see the price before you pay anything.
           </p>
           <ReserveBookButton reserved={Boolean(user.bookReservedAt)} />
