@@ -100,7 +100,9 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
             , {user.firstName || 'there'}!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage your dogs and explore everything DogText has to offer.
+            {dogs.length > 0
+              ? `Here's what ${dogs[0].name} had to say this morning.`
+              : "Add your dog to get their first text."}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -112,53 +114,6 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
             {user.subscriptionTier} Plan
           </Badge>
         </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {[
-          {
-            icon: Heart,
-            label: 'My Dogs',
-            value: `${dogs.length}/${maxDogs}`,
-          },
-          {
-            icon: MessageCircle,
-            label: 'Messages Left',
-            value: isPremium ? '∞' : String(messagesRemaining),
-            progress: isPremium ? null : (messagesUsed / messageLimit) * 100,
-          },
-          {
-            icon: Calendar,
-            label: 'Member Since',
-            value: new Date(user.createdAt).toLocaleDateString('en-US', {
-              month: 'short',
-              year: 'numeric',
-            }),
-          },
-        ].map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label}>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className="p-2 bg-[#FFF8F0] rounded-lg dark:bg-[#FF8C42]/10">
-                    <Icon className="w-6 h-6 text-[#FF8C42]" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">{stat.label}</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">
-                      {stat.value}
-                    </p>
-                    {stat.progress !== null && stat.progress !== undefined && (
-                      <Progress value={stat.progress} className="mt-2 h-2" />
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
       </div>
 
       {/* Daily Barks */}
@@ -185,6 +140,53 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
           </div>
         </div>
       )}
+
+      {/* Quick Stats: one compact row, below the texts */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-6 mb-8">
+        {[
+          {
+            icon: Heart,
+            label: 'My Dogs',
+            value: `${dogs.length}/${maxDogs}`,
+          },
+          {
+            icon: MessageCircle,
+            label: 'Chats left',
+            value: isPremium ? '∞' : String(messagesRemaining),
+            progress: isPremium ? null : (messagesUsed / messageLimit) * 100,
+          },
+          {
+            icon: Calendar,
+            label: 'Member Since',
+            value: new Date(user.createdAt).toLocaleDateString('en-US', {
+              month: 'short',
+              year: 'numeric',
+            }),
+          },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.label}>
+              <CardContent className="p-3 sm:p-6">
+                <div className="flex items-center">
+                  <div className="hidden sm:block p-2 bg-[#FFF8F0] rounded-lg dark:bg-[#FF8C42]/10">
+                    <Icon className="w-6 h-6 text-[#FF8C42]" />
+                  </div>
+                  <div className="sm:ml-4 flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">{stat.label}</p>
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stat.value}
+                    </p>
+                    {stat.progress !== null && stat.progress !== undefined && (
+                      <Progress value={stat.progress} className="mt-2 h-2" />
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* My Dogs */}

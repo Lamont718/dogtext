@@ -129,7 +129,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
       {/* 1. REDESIGNED HERO SECTION */}
       <section className="relative gradient-warm overflow-hidden min-h-screen flex items-center">
         {/* Floating paw prints animation */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
           <div className="absolute top-20 left-10 text-6xl animate-float-paw" style={{ animationDelay: '0s' }}>🐾</div>
           <div className="absolute top-40 right-20 text-5xl animate-float-paw" style={{ animationDelay: '1s' }}>🐾</div>
           <div className="absolute bottom-40 left-1/4 text-4xl animate-float-paw" style={{ animationDelay: '2s' }}>🐾</div>
