@@ -1,4 +1,4 @@
-// One hand-written morning text per breed guide, in the DogText voice
+// One hand-written letter to kids per breed guide, in the DogText voice
 // (lib/dog-voice.ts). Shown near the top of /learn/breeds/[slug] so someone
 // reading about their breed sees what the product is before they scroll.
 // Keys are BreedProfile slugs.
@@ -16,88 +16,88 @@ export const BREED_TEXTS: Record<string, BreedText> = {
   beagle: {
     dogName: 'Waffles',
     message:
-      'I have located a smell. It is under the couch. It is either a cracker or treasure. I will not rest until I know. Please move the couch.',
+      'Maya. I smelled your lunchbox all morning. I did not open it. I only smelled it. It smells like a sandwich and good decisions. See you after school.',
     demoBreed: 'beagle',
   },
   'border-collie': {
     dogName: 'Scout',
     message:
-      'The children will not stay in a group. I have tried everything. They keep leaving. Please come home and help me organize them.',
+      'Leo and Ava. Your toys were all over the floor. I moved them into a group. They kept not staying in the group. I will keep trying. This is my job.',
     demoBreed: 'border-collie',
   },
   boxer: {
     dogName: 'Tank',
     message:
-      'I did a zoomie in the kitchen and the rug came with me. The rug and I are fine. The vase is fine. Mostly the vase is fine.',
+      'Jalen. I did a zoomie in the kitchen and the rug came with me. The rug is fine. I am fine. Mostly the rug is fine.',
     demoBreed: 'boxer',
   },
   bulldog: {
     dogName: 'Winston',
-    message: 'Walk update: I went to the corner. I have decided the corner was enough. Please come carry me home.',
+    message: 'Sofia. I went for a walk to the corner. I decided the corner was enough. It was a very good corner. Tell you more later.',
     demoBreed: 'bulldog',
   },
   'cavalier-king-charles-spaniel': {
     dogName: 'Rosie',
     message:
-      'You left the room for four minutes. I sat by the door for all four. I am not saying I was worried. I was worried.',
+      'Amara. You were at school for a very long time. I sat by the door the whole time. I was not worried. I was a little worried. Come home.',
     demoBreed: 'cavalier',
   },
   chihuahua: {
     dogName: 'Peanut',
     message:
-      'A very large dog walked past our window. I told him to leave. He left. I would like everyone to know I did that.',
+      'Noah. A very large dog walked past our window. I told him to leave. He left. I would like you to know I did that.',
     demoBreed: 'chihuahua',
   },
   dachshund: {
     dogName: 'Frank',
     message:
-      'I have tunneled into the blanket fort. Do not look for me. I am not coming out until there is cheese.',
+      'Zoe. I made a tunnel in your blanket. It is my tunnel now. You can visit my tunnel. Please knock first.',
     demoBreed: 'dachshund',
   },
   'french-bulldog': {
     dogName: 'Mochi',
-    message: 'I snored so loud I woke myself up. I barked at the noise. It was me. We will not discuss this.',
+    message: 'Eli. I snored so loud I woke myself up. I barked at the noise. It was me. We will not talk about this.',
     demoBreed: 'french-bulldog',
   },
   'german-shepherd': {
     dogName: 'Duke',
     message:
-      'Perimeter check complete. Mailman: handled. Squirrel: still at large. I have eyes on the fence. You may come home now.',
+      'Jada and Marcus. Report: the backyard is safe. The squirrel is still out there. I have my eyes on the fence. All clear until you get home.',
     demoBreed: 'german-shepherd',
   },
   'golden-retriever': {
     dogName: 'Sunny',
     message:
-      'I brought you a sock as a gift. You were not home. I have been holding the sock for an hour. It is still a gift.',
+      'Lily! I brought you a sock as a present. You were at school. I have been holding the sock all day. It is still a present.',
     demoBreed: 'golden-retriever',
   },
   'labrador-retriever': {
     dogName: 'Moose',
     message:
-      'Breakfast was eleven minutes ago. I have forgotten what it tasted like. I think I need a second breakfast to remember.',
+      'Caleb. Breakfast was eleven minutes ago. I forgot what it tasted like. I think I need a second breakfast to remember. Asking for a friend. The friend is me.',
     demoBreed: 'labrador',
   },
   poodle: {
     dogName: 'Juliette',
-    message: 'I have been groomed. I look magnificent. The cat has not said anything. I believe the cat is jealous.',
+    message: 'Nia. I got a haircut today. I look fantastic. The cat has not said anything. I think the cat is jealous.',
     demoBreed: 'poodle',
   },
   rottweiler: {
     dogName: 'Bruno',
     message:
-      'Someone rang the doorbell. I used my big voice. Then I remembered the doorbell was on the TV. Still. Better safe.',
+      'Isaiah. The doorbell rang. I used my big voice. Then I found out the doorbell was on the TV. Still. I was ready.',
     demoBreed: 'rottweiler',
   },
   'siberian-husky': {
     dogName: 'Bear',
     message:
-      'IT IS 58 DEGREES. THIS IS UNACCEPTABLE. I am lying on the kitchen tile in protest. I have filed a complaint with the fridge.',
+      'LEO. AVA. ONE SNOWFLAKE FELL TODAY. I SAW IT. I am waiting by the window for the other snowflakes. I will tell you everything.',
     demoBreed: 'husky',
   },
   'yorkshire-terrier': {
     dogName: 'Pixie',
     message:
-      'The vacuum came out today. I stood my ground. Then I stood my ground from under the bed. Final report: the vacuum lost.',
+      'Mia. The vacuum came out today. I was very brave. I was brave from under your bed. Final report: the vacuum lost.',
     demoBreed: 'yorkshire-terrier',
   },
 };

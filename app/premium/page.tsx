@@ -7,7 +7,7 @@ import JoinListButton from '@/components/premium/join-list-button';
 export const metadata = {
   title: 'Pricing | DogText',
   description:
-    'Free forever: a morning text from your dog and 5 chats a week. Premium and Family open soon, and the list keeps today’s price.',
+    'Free forever: a daily letter from your dog to your kids and 5 chats a week. Premium and Family open soon, and the list keeps today’s price.',
 };
 
 const plans = [
@@ -17,7 +17,7 @@ const plans = [
     period: 'forever',
     description: 'Try us out. No credit card.',
     features: [
-      'A new text from your dog every morning',
+      'A new letter to your kids every day',
       '5 chats with your dog per week',
       '1 dog profile',
       'Browse the breed library',

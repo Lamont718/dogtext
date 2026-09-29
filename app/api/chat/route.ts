@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       const usage = await prisma.messageUsage.findFirst({ where: { userId, weekStartDate } });
       if ((usage?.messageCount ?? 0) >= FREE_WEEKLY_LIMIT) {
         return NextResponse.json(
-          { error: `That's your ${FREE_WEEKLY_LIMIT} chats for this week. ${dog.name}'s morning texts keep coming, and chats reset Sunday.` },
+          { error: `That's your ${FREE_WEEKLY_LIMIT} chats for this week. ${dog.name}'s daily letters keep coming, and chats reset Sunday.` },
           { status: 403 }
         );
       }

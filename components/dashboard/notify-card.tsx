@@ -129,7 +129,7 @@ export default function NotifyCard({ dogName }: { dogName: string }) {
         {state === 'off' && (
           <>
             <div className="flex-1 text-sm text-gray-700">
-              <p className="font-semibold text-gray-900 mb-1">Get {dogName}&apos;s morning text on this phone</p>
+              <p className="font-semibold text-gray-900 mb-1">Get {dogName}&apos;s daily letter on this phone</p>
               <p>A notification at 7am, like a real text. Free.</p>
             </div>
             <Button onClick={turnOn} disabled={busy} className="rounded-full bg-[#FF8C42] hover:bg-[#FF6B1A] text-white">

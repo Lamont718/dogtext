@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { DEMO_BREEDS, type DemoBreedSlug, savePendingDog } from '../lib/dog-voice';
+import { DEMO_BREEDS, type DemoBreedSlug, parseKidNames, savePendingDog } from '../lib/dog-voice';
 import ShareDemoText from '../components/demo/share-demo-text';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -55,7 +55,8 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
   const { data: session } = useSession();
   
   // AI Demo Form State
-  const [ownerName, setOwnerName] = useState('');
+  // The kids the dog writes to, typed as 'Maya and Leo'.
+  const [kidNames, setKidNames] = useState('');
   const [dogName, setDogName] = useState('');
   const [breed, setBreed] = useState('');
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
@@ -90,8 +91,8 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
   const handleGenerateMessages = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!ownerName || !dogName || !breed || selectedTraits.length !== 3) {
-      alert('Please fill all fields and select exactly 3 personality traits');
+    if (!parseKidNames(kidNames).length || !dogName || !breed || selectedTraits.length !== 3) {
+      alert("Add your kids' first names, your dog's name and breed, and pick 3 traits.");
       return;
     }
 
@@ -102,7 +103,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ownerName,
+          kids: parseKidNames(kidNames),
           dogName,
           breed,
           traits: selectedTraits,
@@ -130,7 +131,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
   const handleTryAgain = () => {
     setShowMessages(false);
     setGeneratedMessages([]);
-    setOwnerName('');
+    setKidNames('');
     setDogName('');
     setBreed('');
     setSelectedTraits([]);
@@ -159,14 +160,14 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               transition={{ duration: 0.6 }}
             >
               <p className="text-sm font-bold text-white/80 tracking-wider mb-4">
-                A DAILY TEXT FROM YOUR DOG
+                A DAILY LETTER FROM YOUR DOG, TO YOUR KIDS
               </p>
               <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                Your dog texts you. <span className="block">Every morning.</span>
+                Your dog writes to your kids. <span className="block">Every day.</span>
               </h1>
               <p className="text-xl text-white/95 mb-10 leading-relaxed max-w-xl">
-                Free. In their voice. Built from their breed, their quirks, and the
-                life you share. Wake up to a message that actually sounds like them.
+                In your dog&apos;s voice, in words kids understand. Read it at breakfast or
+                bedtime. At the end of the year, it&apos;s a book.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -176,7 +177,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                   asChild
                 >
                   <Link href={session ? '/dashboard' : '/auth/signup'}>
-                    Get tomorrow's text →
+                    Get the first letter →
                   </Link>
                 </Button>
 
@@ -192,7 +193,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               <div className="flex flex-wrap items-center gap-3 mt-8 text-white/95 text-sm">
                 <span className="flex items-center gap-1">✨ Free forever</span>
                 <span>•</span>
-                <span className="flex items-center gap-1">📭 Just your email</span>
+                <span className="flex items-center gap-1">👧 First names only</span>
                 <span>•</span>
                 <span className="flex items-center gap-1">🔒 No data sold</span>
               </div>
@@ -218,13 +219,13 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                         Coco
                         <span className="w-2 h-2 rounded-full bg-green-500"></span>
                       </div>
-                      <div className="text-xs text-gray-500">your dog · just now</div>
+                      <div className="text-xs text-gray-500">to Maya · just now</div>
                     </div>
                   </div>
 
                   {/* Messages */}
                   <div className="space-y-3 pt-5">
-                    <div className="text-xs text-gray-400 text-center">Today 7:47 AM</div>
+                    <div className="text-xs text-gray-400 text-center">Today&apos;s letter</div>
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -232,7 +233,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                       className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 max-w-[88%]"
                     >
                       <p className="text-[15px] text-[#2C2C2C] leading-relaxed">
-                        Dad, the squirrel by the window is plotting again. Send help. Or treats. Either works 🐿️
+                        Maya. I guarded your backpack all day. Nobody took it. You&apos;re welcome.
                       </p>
                     </motion.div>
                     <motion.div
@@ -242,7 +243,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                       className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 max-w-[88%]"
                     >
                       <p className="text-[15px] text-[#2C2C2C] leading-relaxed">
-                        Also — when are you coming home? I miss you. Walk soon? 💛
+                        Also, there was a crumb in it. I handled the crumb. See you after school 💛
                       </p>
                     </motion.div>
                   </div>
@@ -250,7 +251,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                   {/* Footer */}
                   <div className="mt-6 pt-4 border-t border-gray-100">
                     <p className="text-xs text-gray-500 text-center">
-                      ✨ Your dog's first text tomorrow morning
+                      ✨ A new letter from Coco every day
                     </p>
                   </div>
                 </div>
@@ -272,13 +273,13 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               className="text-center mb-10"
             >
               <p className="text-sm font-bold text-[#FF8C42] tracking-wider mb-3">
-                SAMPLE BARKS
+                SAMPLE LETTERS
               </p>
               <h2 className="text-3xl lg:text-4xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-3">
-                What your dog might text you
+                What your dog might write to your kids
               </h2>
               <p className="text-base text-[#6B6B6B] dark:text-gray-400 max-w-2xl mx-auto">
-                Real-feeling, breed-flavored, written by our AI. Tap any one to share — or sign up and get one from your own dog tomorrow morning.
+                Written by our AI in each breed&apos;s voice, in words kids understand. Tap one to share it, or get letters from your own dog.
               </p>
             </motion.div>
 
@@ -324,7 +325,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                 asChild
               >
                 <Link href={session ? '/dashboard' : '/auth/signup'}>
-                  Get one from your dog →
+                  Get letters from your dog →
                 </Link>
               </Button>
             </div>
@@ -340,10 +341,10 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
             className="text-center mb-12"
           >
             <h2 className="text-4xl lg:text-5xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-4">
-              Want to See What Your Dog Might Say?
+              What Would Your Dog Write to Your Kids?
             </h2>
             <p className="text-xl text-[#6B6B6B] dark:text-gray-400">
-              Tell us about your dog and we'll show you the magic ✨
+              Your kids&apos; first names, your dog, and their personality. Three letters in seconds.
             </p>
           </motion.div>
 
@@ -355,14 +356,15 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               <form onSubmit={handleGenerateMessages} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="ownerName" className="text-base font-semibold text-[#2C2C2C] dark:text-gray-100 mb-2">
-                      Your Name
+                    <Label htmlFor="kidNames" className="text-base font-semibold text-[#2C2C2C] dark:text-gray-100 mb-2">
+                      Your Kids&apos; First Names
                     </Label>
                     <Input
-                      id="ownerName"
-                      value={ownerName}
-                      onChange={(e) => setOwnerName(e.target.value)}
-                      placeholder="Sarah"
+                      id="kidNames"
+                      value={kidNames}
+                      onChange={(e) => setKidNames(e.target.value)}
+                      placeholder="Maya and Leo"
+                      maxLength={120}
                       className="text-base p-6 rounded-xl border-2 border-gray-200 focus:border-[#FF8C42]"
                     />
                   </div>
@@ -481,10 +483,10 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
 
                 <div className="text-center pt-8 border-t-2 border-gray-100">
                   <p className="text-xl font-semibold text-[#2C2C2C] dark:text-gray-100 mb-2">
-                    Want a real one from {dogName} every morning?
+                    Want a letter from {dogName} every day?
                   </p>
                   <p className="text-[#6B6B6B] dark:text-gray-400 mb-6">
-                    Free. We'll keep {dogName}'s details. You just add your email.
+                    Free. We&apos;ll keep {dogName} and the kids&apos; names. You just add your email.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
@@ -495,14 +497,15 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                         href="/auth/signup?from=demo"
                         onClick={() =>
                           savePendingDog({
-                            ownerName,
+                            ownerName: '',
+                            kids: parseKidNames(kidNames),
                             dogName,
                             breed: DEMO_BREEDS[breed as DemoBreedSlug] ?? 'Other',
                             traits: selectedTraits,
                           })
                         }
                       >
-                        Get {dogName}'s texts 🐾
+                        Get {dogName}&apos;s letters 🐾
                       </Link>
                     </Button>
                     <Button
@@ -546,7 +549,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                 <p>
                   We believe dogs deserve the best care possible, and owners deserve 
                   guidance without the overwhelm. So we started with the thing that made
-                  her smile, a text from Coco every morning, and added plain-language
+                  her smile, a letter from Coco every day, and added plain-language
                   guides and tools for the rest.
                 </p>
                 <p className="font-semibold">
@@ -1127,7 +1130,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               <span>•</span>
               <span>✨ Founder pricing locked while in beta</span>
               <span>•</span>
-              <span>🐾 A new text every morning</span>
+              <span>🐾 A new letter every day</span>
             </div>
 
             <p className="text-sm opacity-85">

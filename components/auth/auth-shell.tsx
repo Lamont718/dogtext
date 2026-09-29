@@ -9,7 +9,7 @@ interface AuthShellProps {
 
 const SIGNUP_BULLETS = [
   { icon: MessageCircle, text: '5 AI conversations per week, free forever' },
-  { icon: Sparkles, text: 'A daily message from your dog every morning' },
+  { icon: Sparkles, text: 'A letter from your dog to your kids, every day' },
   { icon: CheckCircle, text: 'Real breed guides + working calculators' },
   { icon: Lock, text: "Your data stays yours — chats never train the AI" },
 ];

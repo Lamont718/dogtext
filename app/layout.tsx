@@ -10,13 +10,13 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://dogtext-tau.vercel.app'),
-  title: 'DogText: your dog texts you every morning',
-  description: 'A free morning text from your dog, in their voice, built from their breed and personality. Text them back, share it to your story, plus plain-language breed guides and calculators.',
+  title: 'DogText: letters from your dog to your kids',
+  description: 'Every day your family dog writes your kids a short letter in its own voice, in words they understand. Read it at breakfast or bedtime, and turn a year of letters into a book. Free.',
   keywords: 'dog care, AI dog chat, pet training, dog breeds, dog health, pet companion',
   authors: [{ name: 'DogText Team' }],
   openGraph: {
-    title: 'DogText: your dog texts you every morning',
-    description: 'A free morning text from your dog, in their voice. Text them back and share it to your story.',
+    title: 'DogText: letters from your dog to your kids',
+    description: 'Every day your family dog writes your kids a short letter, in its own voice. Free.',
     siteName: 'DogText',
     images: [
       {
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DogText: your dog texts you every morning',
-    description: 'A free morning text from your dog, in their voice. Text them back and share it to your story.',
+    title: 'DogText: letters from your dog to your kids',
+    description: 'Every day your family dog writes your kids a short letter, in its own voice. Free.',
     images: ['/og-image.png'],
   },
   robots: {

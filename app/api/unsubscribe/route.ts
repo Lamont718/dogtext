@@ -68,6 +68,6 @@ export async function GET(req: NextRequest) {
 
   return page(
     'Unsubscribed',
-    `<span class="emoji">🐾</span><h1>You're unsubscribed</h1><p>No more daily texts from your dog. We'll miss you both.</p><p style="margin-top:24px;font-size:14px;">Changed your mind? <a href="/dashboard/settings">Turn emails back on</a> any time.</p>`,
+    `<span class="emoji">🐾</span><h1>You're unsubscribed</h1><p>No more daily letters from your dog by email. We'll miss you.</p><p style="margin-top:24px;font-size:14px;">Changed your mind? <a href="/dashboard/settings">Turn emails back on</a> any time.</p>`,
   );
 }

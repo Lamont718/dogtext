@@ -8,6 +8,8 @@ import {
   DEMO_TRAITS,
   VOICE_GUIDE,
   VOICE_SYSTEM,
+  KID_TOPICS,
+  kidVoiceGuide,
   breedForPrompt,
   type DemoBreedSlug,
 } from '../../../lib/dog-voice';
@@ -17,7 +19,9 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const ALLOWED_BREEDS = Object.keys(DEMO_BREEDS) as [DemoBreedSlug, ...DemoBreedSlug[]];
 
 const Body = z.object({
-  ownerName: z.string().trim().min(1).max(30),
+  ownerName: z.string().trim().max(30).optional(),
+  // Children the dog writes to: first names, entered by the parent.
+  kids: z.array(z.string().trim().min(1).max(30)).max(6).optional(),
   dogName: z.string().trim().min(1).max(30),
   breed: z.enum(ALLOWED_BREEDS),
   traits: z.array(z.enum(DEMO_TRAITS)).length(3),
@@ -49,11 +53,23 @@ export async function POST(request: NextRequest) {
   const breedName = breedForPrompt(DEMO_BREEDS[body.breed]);
   const traitsStr = body.traits.join(', ');
 
-  const prompt = `You are ${body.dogName}, a ${breedName}. Your personality: ${traitsStr}. Your human is ${body.ownerName}.
+  const kids = body.kids?.filter(Boolean) ?? [];
+  const owner = body.ownerName || 'your human';
+  const topics = [...KID_TOPICS].sort(() => Math.random() - 0.5).slice(0, 3);
 
-Write 3 separate text messages you'd send ${body.ownerName} on 3 different mornings. Each one is about ONE specific small thing that happened or that you're worried about.
+  const prompt = kids.length
+    ? `You are ${body.dogName}, a ${breedName}. Your personality: ${traitsStr}.
 
-The 3 messages are about 3 different things. Use ${body.ownerName}'s name once in a while, not every message.
+Write 3 separate letters to the children in your family (${kids.join(', ')}), for 3 different days. Make each one sound different: different openings and endings. Only ONE of the three may say "I love you".
+
+${kidVoiceGuide(kids, topics)}
+
+Return JSON: {"messages": ["...", "...", "..."]}`
+    : `You are ${body.dogName}, a ${breedName}. Your personality: ${traitsStr}. Your human is ${owner}.
+
+Write 3 separate text messages you'd send ${owner} on 3 different mornings. Each one is about ONE specific small thing that happened or that you're worried about.
+
+The 3 messages are about 3 different things. Use ${owner}'s name once in a while, not every message.
 
 ${VOICE_GUIDE}
 

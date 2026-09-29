@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: `${breed.breedName} Personality & Care Guide | DogText`,
     description: breed.description.slice(0, 160),
     openGraph: {
-      title: `What would your ${breed.breedName} text you?`,
-      description: `${breed.breedName} temperament, care and training in plain language, plus a free morning text from your dog.`,
+      title: `What would your ${breed.breedName} write to your kids?`,
+      description: `${breed.breedName} temperament, care and training in plain language, plus a free daily letter from your dog to your kids.`,
     },
   };
 }
@@ -94,7 +94,7 @@ export default async function BreedPage({ params }: { params: { slug: string } }
       {sample && (
         <div className="mb-10 rounded-2xl bg-gradient-to-br from-[#FF8C42] to-[#FFB6C1] p-6 sm:p-8">
           <p className="text-sm font-bold tracking-wider text-white/90 mb-4">
-            WHAT A {breed.breedName.toUpperCase()} TEXTS YOU
+            A LETTER FROM A {breed.breedName.toUpperCase()}
           </p>
           <div className="grid gap-6 lg:grid-cols-2 items-center">
             <div className="bg-white rounded-3xl shadow-xl p-5">
@@ -107,17 +107,17 @@ export default async function BreedPage({ params }: { params: { slug: string } }
                   <div className="text-xs text-gray-500">your dog · {breed.breedName}</div>
                 </div>
               </div>
-              <div className="text-xs text-gray-400 text-center mt-3 mb-2">Today 7:47 AM</div>
+              <div className="text-xs text-gray-400 text-center mt-3 mb-2">Today&apos;s letter</div>
               <div className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 text-[15px] leading-relaxed text-[#2C2C2C]">
                 {sample.message}
               </div>
             </div>
             <div className="text-white">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-                What would your {breed.breedName} text you?
+                What would your {breed.breedName} write to your kids?
               </h2>
               <p className="text-white/95 mb-5">
-                DogText writes your dog a text every morning, in their voice, built from their breed
+                Every day your dog writes your kids a short letter, in its own voice, built from its breed
                 and personality. Free.
               </p>
               <Link

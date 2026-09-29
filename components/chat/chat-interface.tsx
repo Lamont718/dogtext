@@ -68,7 +68,7 @@ export default function ChatInterface({ dog }: ChatInterfaceProps) {
     const text = newMessage.trim();
     if (!text || isLoading) return;
     if (outOfChats) {
-      toast.error(`That's your chats for this week. ${dog.name}'s morning texts keep coming.`);
+      toast.error(`That's your chats for this week. ${dog.name}'s daily letters keep coming.`);
       return;
     }
 
@@ -235,7 +235,7 @@ export default function ChatInterface({ dog }: ChatInterfaceProps) {
           </div>
           {outOfChats && (
             <p className="mt-2 text-xs text-gray-500 text-center">
-              That&apos;s this week&apos;s {messageUsage?.limit} chats. {dog.name}&apos;s morning texts keep coming.{' '}
+              That&apos;s this week&apos;s {messageUsage?.limit} chats. {dog.name}&apos;s daily letters keep coming.{' '}
               <Link href="/premium" className="text-[#FF8C42] font-semibold">Unlimited with Premium</Link>
             </p>
           )}

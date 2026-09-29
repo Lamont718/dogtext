@@ -100,7 +100,7 @@ export default async function PublicBarkPage({ params }: { params: { id: string 
           <ShareBarkButton barkId={bark.id} dogName={bark.dog.name} className="justify-center mb-8" />
 
           <div className="text-center border-t border-gray-100 pt-8">
-            <p className="text-lg font-semibold text-gray-900 mb-1">What would your dog text you?</p>
+            <p className="text-lg font-semibold text-gray-900 mb-1">What would your dog write to your kids?</p>
             <p className="text-sm text-gray-600 mb-5">
               Tell us their name, breed and personality. See three texts in seconds.
             </p>
@@ -110,7 +110,7 @@ export default async function PublicBarkPage({ params }: { params: { id: string 
             >
               Try it with your dog
             </Link>
-            <p className="text-xs text-gray-400 mt-3">Free. A new text from your dog every morning.</p>
+            <p className="text-xs text-gray-400 mt-3">Free. A new letter from your dog every day.</p>
           </div>
         </div>
 

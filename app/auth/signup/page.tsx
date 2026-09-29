@@ -68,7 +68,7 @@ export default function SignupPage() {
     }
 
     if (!dogName.trim() || !breed) {
-      setError("Tell us your dog's name and breed so they can text you.");
+      setError("Tell us your dog's name and breed so they can write to your kids.");
       setIsLoading(false);
       return;
     }
@@ -116,7 +116,7 @@ export default function SignupPage() {
     }
   };
 
-  const title = demoDog ? `Get ${demoDog.dogName}'s texts` : 'Get texts from your dog';
+  const title = demoDog ? `Get ${demoDog.dogName}'s letters` : 'Letters from your dog';
 
   return (
     <AuthShell side="signup">
@@ -125,7 +125,7 @@ export default function SignupPage() {
           <CardTitle className="text-3xl">{title}</CardTitle>
           <CardDescription>
             Free forever, no credit card. You&apos;ll see the first one as soon as you sign up, then
-            a new one every morning.
+            a new one every day.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -252,7 +252,7 @@ export default function SignupPage() {
                 disabled={isLoading}
               />
               <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-                The morning texts come here.
+                We&apos;ll send the letters here too.
               </p>
             </div>
 

@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'DogText',
     short_name: 'DogText',
-    description: 'Your dog texts you every morning.',
+    description: 'Letters from your dog to your kids.',
     start_url: '/dashboard',
     display: 'standalone',
     background_color: '#FFF8F0',

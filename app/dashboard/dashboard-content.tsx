@@ -127,7 +127,7 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Today&apos;s letter</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                A new one every morning. Read it aloud at breakfast or bedtime.
+                A new one every day. Read it aloud at breakfast or bedtime.
               </p>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
                   Add your first dog
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-                  Create a profile and you'll get a daily message from them every morning,
+                  Create a profile and they&apos;ll write your kids a letter every day,
                   plus AI chats based on their breed and personality.
                 </p>
                 <Button

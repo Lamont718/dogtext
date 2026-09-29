@@ -153,7 +153,10 @@ export function kidTopicFor(dogName: string, date: Date): string {
 }
 
 /** The letter-writing guide with THIS family's children in the examples, so no other names leak in. */
-export function kidVoiceGuide(kidNames: string[], topic: string): string {
+export function kidVoiceGuide(kidNames: string[], topic: string | string[]): string {
+  const topicLine = Array.isArray(topic)
+    ? `Write one letter about each of these, in this order: ${topic.join('; ')}. Not the couch or leaves.`
+    : `Today's letter is about: ${topic}. Make it about that, not the couch or leaves.`;
   const a = kidNames[0] || 'Sam';
   const both = kidNames.length > 1 ? kidNames.slice(0, -1).join(', ') + ' and ' + kidNames[kidNames.length - 1] : a;
   return `This letter is read aloud by a parent to the children. Write it for them.
@@ -163,7 +166,7 @@ The voice (same dog, same deadpan seriousness, now talking to kids). These show 
 - "${both}. The bathtub made the loud noise again. I was brave. I was under the bed, but I was brave. Please check on the bathtub after school."
 - "${both}. I have counted your shoes. There are eleven. One is missing. I am on the case."
 
-Today's letter is about: ${topic}. Make it about that, not the couch or leaves.
+${topicLine}
 
 Your personality changes HOW you write:
 - energetic: SHORT ALL-CAPS bursts, can't sit still

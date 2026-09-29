@@ -140,7 +140,7 @@ export function BarkCard({ dogName, dogBreed, message, format, photo }: BarkCard
             marginBottom: story ? 24 : 12,
           }}
         >
-          Today 7:47 AM
+          {"Today's letter"}
         </div>
 
         <div
@@ -175,7 +175,7 @@ export function BarkCard({ dogName, dogBreed, message, format, photo }: BarkCard
         }}
       >
         <div style={{ fontFamily: 'Poppins', fontSize: story ? 44 : 24, fontWeight: 700, color: '#FF8C42' }}>
-          Get texts from your dog
+          Letters from your dog to your kids
         </div>
         <div style={{ fontSize: story ? 32 : 20, color: '#6B6B6B' }}>{SITE_HOST}</div>
       </div>
