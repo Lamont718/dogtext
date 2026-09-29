@@ -14,7 +14,7 @@ const STATIC_PAGES: [path: string, priority: number][] = [
   ['/tools/age-calculator', 0.7],
   ['/tools/food-calculator', 0.7],
   ['/celebrations', 0.5],
-  ['/premium', 0.5],
+  ['/book', 0.8],
   ['/about', 0.4],
   ['/courses/puppy-training', 0.4],
   ['/contact', 0.3],

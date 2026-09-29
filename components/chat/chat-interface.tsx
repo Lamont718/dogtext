@@ -152,9 +152,6 @@ export default function ChatInterface({ dog }: ChatInterfaceProps) {
                   <div className={messageUsage.remaining <= 1 ? 'text-red-600 font-semibold' : 'text-gray-500'}>
                     {messageUsage.remaining} of {messageUsage.limit} chats left this week
                   </div>
-                  <Link href="/premium" className="text-[#FF8C42] hover:text-[#FF6B1A] inline-flex items-center gap-1 mt-0.5">
-                    <Crown className="w-3 h-3" /> Unlimited with Premium
-                  </Link>
                 </>
               ) : (
                 <span className="text-gray-500">Unlimited chats</span>
@@ -235,8 +232,7 @@ export default function ChatInterface({ dog }: ChatInterfaceProps) {
           </div>
           {outOfChats && (
             <p className="mt-2 text-xs text-gray-500 text-center">
-              That&apos;s this week&apos;s {messageUsage?.limit} chats. {dog.name}&apos;s daily letters keep coming.{' '}
-              <Link href="/premium" className="text-[#FF8C42] font-semibold">Unlimited with Premium</Link>
+              That&apos;s this week&apos;s {messageUsage?.limit} chats. {dog.name}&apos;s daily letters keep coming. Chats reset Sunday.
             </p>
           )}
         </div>

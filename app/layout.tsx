@@ -23,7 +23,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'DogText - Premium Dog Care Platform',
+        alt: 'DogText: letters from your dog to your kids',
       },
     ],
     locale: 'en_US',

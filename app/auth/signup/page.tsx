@@ -136,13 +136,6 @@ export default function SignupPage() {
               </div>
             )}
 
-            {plan && (
-              <div className="rounded-2xl bg-[#FFF8F0] px-4 py-3 text-sm text-[#2C2C2C] dark:bg-muted dark:text-gray-100">
-                You&apos;ll be on the {plan === 'PREMIUM' ? 'Premium' : 'Family'} list. It&apos;s free until paid
-                plans open, and you keep today&apos;s price.
-              </div>
-            )}
-
             {demoDog ? (
               <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8F0] px-4 py-3 dark:bg-muted">
                 <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-[#FF8C42] to-[#FFB380] flex items-center justify-center text-xl">

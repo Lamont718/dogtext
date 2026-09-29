@@ -43,10 +43,9 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
 
   if (!user) return null;
 
-  const isPremium = user.subscriptionTier === 'PREMIUM' || user.subscriptionTier === 'FAMILY';
-  const maxDogs =
-    user.subscriptionTier === 'FAMILY' ? 5 : user.subscriptionTier === 'PREMIUM' ? 3 : 1;
-  const messageLimit = user.subscriptionTier === 'FREE' ? 5 : 999999;
+  // One free plan for everyone (Premium dropped 2026-09-29).
+  const maxDogs = 3;
+  const messageLimit = 5;
   const messagesUsed = messageUsage?.messageCount || 0;
   const messagesRemaining = Math.max(0, messageLimit - messagesUsed);
 
@@ -109,15 +108,6 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
               : "Add your dog to get their first text."}
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge
-            variant={isPremium ? 'default' : 'secondary'}
-            className={isPremium ? 'bg-[#FF8C42]' : ''}
-          >
-            {isPremium && <Crown className="w-3 h-3 mr-1" />}
-            {user.subscriptionTier} Plan
-          </Badge>
-        </div>
       </div>
 
       {/* Daily Barks */}
@@ -170,8 +160,8 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
           {
             icon: MessageCircle,
             label: 'Chats left',
-            value: isPremium ? '∞' : String(messagesRemaining),
-            progress: isPremium ? null : (messagesUsed / messageLimit) * 100,
+            value: String(messagesRemaining),
+            progress: (messagesUsed / messageLimit) * 100,
           },
           {
             icon: Calendar,
@@ -378,31 +368,8 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
             </CardContent>
           </Card>
 
-          {/* Upgrade Prompt for Free Users */}
-          {!isPremium && (
-            <Card className="bg-[#FFF8F0] border-[#FFB88C]">
-              <CardContent className="p-6">
-                <div className="flex items-center mb-3">
-                  <Crown className="w-5 h-5 text-[#FF8C42] mr-2" />
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Premium is coming</h3>
-                </div>
-                <ul className="text-sm text-gray-700 space-y-1 mb-4">
-                  <li>• Unlimited chats with your dog</li>
-                  <li>• Up to 3 dog profiles (Premium) or 5 (Family)</li>
-                  <li>• Join the list and keep today&apos;s price</li>
-                </ul>
-                <Button asChild className="w-full bg-[#FF8C42] hover:bg-[#FF6B1A]">
-                  <Link href="/premium">
-                    <Crown className="w-4 h-4 mr-2" />
-                    See the plans
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Usage Stats for Free Users */}
-          {!isPremium && (
+          {(
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Weekly Usage</CardTitle>

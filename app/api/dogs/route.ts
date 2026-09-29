@@ -64,7 +64,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
-const MAX_DOGS: Record<string, number> = { FREE: 1, PREMIUM: 3, FAMILY: 5 };
+// Everyone gets the same: Premium was dropped (2026-09-29).
+const MAX_DOGS = 3;
 
 const NewDog = z.object({
   name: z.string().trim().min(1).max(30),
@@ -101,10 +102,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const limit = MAX_DOGS[user.subscriptionTier] ?? 1;
-    if (user._count.dogs >= limit) {
+    if (user._count.dogs >= MAX_DOGS) {
       return NextResponse.json(
-        { error: `Your plan includes ${limit} dog profile${limit === 1 ? '' : 's'}.` },
+        { error: `Up to ${MAX_DOGS} dogs per family.` },
         { status: 403 }
       );
     }

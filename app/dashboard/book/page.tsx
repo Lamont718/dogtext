@@ -5,12 +5,12 @@ import { ArrowLeft } from 'lucide-react';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
 import ReserveBookButton from '@/components/book/reserve-book-button';
+import { BOOK_PRICE_USD, FIRST_BOOK_LETTERS } from '@/lib/book';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Your book | DogText', robots: { index: false } };
 
-// A month of letters makes the first book.
-const FIRST_BOOK = 30;
+const FIRST_BOOK = FIRST_BOOK_LETTERS;
 
 function joinNames(names: string[]): string {
   if (names.length <= 1) return names[0] ?? '';
@@ -105,7 +105,7 @@ export default async function BookPage() {
         <div className="rounded-2xl bg-white border border-gray-200 p-6 text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-2">A real book for your kids</h2>
           <p className="text-gray-600 mb-5">
-            Printed and mailed to you: {dog.name}&apos;s photo on the cover, one letter per page. Printing isn&apos;t
+            ${BOOK_PRICE_USD}, printed and mailed to you: {dog.name}&apos;s photo on the cover, one letter per page. Printing isn&apos;t
             open yet. Reserve a copy and we&apos;ll email you when it is. You&apos;ll see the price before you pay anything.
           </p>
           <ReserveBookButton reserved={Boolean(user.bookReservedAt)} />

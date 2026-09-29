@@ -21,7 +21,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '../ui/navigation-menu';
-import { Heart, Menu, User, Settings, LogOut, Crown, Sparkles, Sun, Moon } from 'lucide-react';
+import { Heart, Menu, User, Settings, LogOut, BookOpen, Sparkles, Sun, Moon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 
 export default function Header() {
@@ -91,11 +91,11 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/premium"
+              href="/book"
               className="text-gray-700 dark:text-gray-300 hover:text-[#FF8C42] dark:hover:text-[#FF8C42] transition-colors font-medium flex items-center space-x-1"
             >
-              <Crown className="w-4 h-4" />
-              <span>Premium</span>
+              <BookOpen className="w-4 h-4" />
+              <span>The Book</span>
             </Link>
 
             <Link
@@ -154,14 +154,12 @@ export default function Header() {
                         Settings
                       </Link>
                     </DropdownMenuItem>
-                    {session?.user?.subscriptionTier === 'FREE' && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/premium" className="flex items-center text-[#FF8C42]">
-                          <Crown className="w-4 h-4 mr-2" />
-                          Upgrade to Premium
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/book" className="flex items-center text-[#FF8C42]">
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Your book
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setTheme(isDark ? 'light' : 'dark')}
@@ -247,12 +245,12 @@ export default function Header() {
                     Shop
                   </Link>
                   <Link
-                    href="/premium"
+                    href="/book"
                     className="text-lg font-medium text-gray-900 hover:text-[#FF8C42] flex items-center space-x-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Crown className="w-5 h-5" />
-                    <span>Premium</span>
+                    <BookOpen className="w-5 h-5" />
+                    <span>The Book</span>
                   </Link>
                   <Link
                     href="/celebrations"

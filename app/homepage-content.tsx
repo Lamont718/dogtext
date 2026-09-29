@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { BOOK_PRICE_USD } from '../lib/book';
 import { DEMO_BREEDS, type DemoBreedSlug, parseKidNames, savePendingDog } from '../lib/dog-voice';
 import ShareDemoText from '../components/demo/share-demo-text';
 import Link from 'next/link';
@@ -773,10 +774,10 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
             <Card className="bg-white shadow-lg border-0">
               <CardContent className="p-8">
                 <div className="text-3xl mb-3">✨</div>
-                <h3 className="text-xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">Founder pricing, locked</h3>
+                <h3 className="text-xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">Free, for good</h3>
                 <p className="text-[#3D3D3D] dark:text-gray-300 leading-relaxed">
-                  Sign up while we're in beta and you keep your launch rate forever, even
-                  when prices go up later.
+                  The daily letters, the chats and the guides are free. The only thing we
+                  sell is the printed book, and only if you want one.
                 </p>
               </CardContent>
             </Card>
@@ -901,202 +902,31 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
         </div>
       </section>
 
-      {/* 8. REDESIGNED PRICING SECTION */}
+      {/* 8. THE BOOK: the one thing we sell */}
       <section className="py-20 bg-white dark:bg-background">
-        <div className="container max-w-6xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-4">
-              Choose Your Experience
-            </h2>
-            <p className="text-xl text-[#6B6B6B] dark:text-gray-400">
-              Start free. Premium is coming soon, and founding members keep their launch price.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {/* Free Tier */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <Card className="border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all relative">
-                <CardContent className="p-8 text-center">
-                  <Badge className="bg-gray-200 text-[#2C2C2C] dark:text-gray-100 mb-4">
-                    FREE
-                  </Badge>
-                  <h3 className="text-2xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">
-                    Just Starting Out?
-                  </h3>
-                  <p className="text-[#6B6B6B] dark:text-gray-400 mb-6 min-h-[60px]">
-                    Try us free. Chat with your dog 5 times a week, access basic training, explore breed guides.
-                  </p>
-                  <div className="mb-4">
-                    <span className="text-5xl font-bold text-[#2C2C2C] dark:text-gray-100">$0</span>
-                    <span className="text-lg text-[#6B6B6B] dark:text-gray-400">/month</span>
-                  </div>
-                  <p className="text-sm text-[#FF8C42] font-semibold italic mb-6">
-                    For: First-time visitors, casual browsers
-                  </p>
-                  <ul className="text-left space-y-3 mb-8">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">5 AI conversations per week</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">1 dog profile</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">Browse the breed library</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">Read every guide</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">Age + food calculators</span>
-                    </li>
-                  </ul>
-                  <Button
-                    className="w-full bg-gray-200 hover:bg-gray-300 text-[#2C2C2C] dark:text-gray-100 py-6 rounded-full font-semibold"
-                    asChild
-                  >
-                    <Link href="/auth/signup">Start Free</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Premium Tier - Featured */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="relative"
-            >
-              <div className="absolute -inset-1 gradient-warm rounded-3xl blur opacity-25"></div>
-              <Card className="border-4 border-[#FF8C42] shadow-2xl relative bg-white transform md:scale-105">
-                <CardContent className="p-8 text-center">
-                  <Badge className="gradient-warm text-white mb-4">
-                    COMING SOON
-                  </Badge>
-                  <h3 className="text-2xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">
-                    Serious Dog Parents
-                  </h3>
-                  <p className="text-[#6B6B6B] dark:text-gray-400 mb-6 min-h-[60px]">
-                    Text your dog as much as you want, for up to 3 dogs. Opening soon.
-                  </p>
-                  <div className="mb-4">
-                    <span className="text-5xl font-bold text-[#2C2C2C] dark:text-gray-100">$7.99</span>
-                    <span className="text-lg text-[#6B6B6B] dark:text-gray-400">/month</span>
-                  </div>
-                  <p className="text-sm text-[#FF8C42] font-semibold italic mb-6">
-                    For: Dedicated owners who want the best
-                  </p>
-                  <ul className="text-left space-y-3 mb-8">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Unlimited AI conversations</strong></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Up to 3 dog profiles</strong></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Everything in Free</strong></span>
-                    </li>
-                  </ul>
-                  <Button
-                    className="w-full gradient-warm text-white py-6 rounded-full font-semibold hover:scale-105 transition-transform"
-                    asChild
-                  >
-                    <Link href="/premium">See pricing details</Link>
-                  </Button>
-                  <p className="text-xs text-[#6B6B6B] dark:text-gray-400 mt-3">
-                    Founder pricing locked while we're in beta.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Family Tier */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all">
-                <CardContent className="p-8 text-center">
-                  <Badge className="bg-[#FFB88C] text-white mb-4">
-                    FAMILY PACK
-                  </Badge>
-                  <h3 className="text-2xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">
-                    Multi-Dog Households
-                  </h3>
-                  <p className="text-[#6B6B6B] dark:text-gray-400 mb-6 min-h-[60px]">
-                    Everything in Premium, but for up to 5 dogs. One subscription, whole pack.
-                  </p>
-                  <div className="mb-4">
-                    <span className="text-5xl font-bold text-[#2C2C2C] dark:text-gray-100">$14.99</span>
-                    <span className="text-lg text-[#6B6B6B] dark:text-gray-400">/month</span>
-                  </div>
-                  <p className="text-sm text-[#FF8C42] font-semibold italic mb-6">
-                    For: Families with multiple fur babies
-                  </p>
-                  <ul className="text-left space-y-3 mb-8">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Everything in Premium</strong></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Up to 5 dog profiles</strong></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>One bill for the whole pack</strong></span>
-                    </li>
-                  </ul>
-                  <Button
-                    variant="outline"
-                    className="w-full border-2 border-[#FF8C42] text-[#FF8C42] hover:bg-[#FFF8F0] py-6 rounded-full font-semibold"
-                    asChild
-                  >
-                    <Link href="/premium">Cover My Pack</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+        <div className="container max-w-4xl mx-auto px-4">
+          <div className="grid gap-10 md:grid-cols-2 items-center">
+            <div className="mx-auto w-full max-w-xs aspect-[3/4] rounded-r-2xl rounded-l-md shadow-2xl bg-gradient-to-br from-[#FF8C42] to-[#FFB6C1] p-8 flex flex-col items-center justify-center text-center text-white">
+              <div className="w-24 h-24 rounded-full bg-white/25 border-4 border-white flex items-center justify-center text-4xl font-bold mb-5">
+                C
+              </div>
+              <p className="font-serif text-2xl font-bold leading-tight">Coco&apos;s Letters to Maya and Leo</p>
+              <p className="mt-2 text-sm text-white/90">Letters from the family dog</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold tracking-wider text-[#FF8C42] mb-3">THE BOOK</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-4">
+                The letters are free. Keep them in a real book.
+              </h2>
+              <p className="text-lg text-[#6B6B6B] dark:text-gray-400 mb-6">
+                A month of your dog&apos;s letters, printed as a hardcover: your dog&apos;s photo on the cover,
+                one letter per page, mailed to your door. ${BOOK_PRICE_USD}. Printing opens soon.
+              </p>
+              <Button asChild className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white rounded-full px-8 py-6 text-base font-semibold">
+                <Link href="/book">See the book</Link>
+              </Button>
+            </div>
           </div>
-
-          {/* Founder note */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto text-center"
-          >
-            <Card className="bg-[#FFF8F0] border-0 shadow-md">
-              <CardContent className="p-6">
-                <p className="text-lg text-[#3D3D3D] dark:text-gray-300 italic mb-3">
-                  "Founding members get every feature we build, at the price you signed up
-                  with — for as long as you stay."
-                </p>
-                <p className="text-sm text-[#6B6B6B] dark:text-gray-400">— Lamont, founder</p>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </section>
 
@@ -1128,7 +958,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
             <div className="flex flex-wrap items-center justify-center gap-2 text-sm mb-4 opacity-90">
               <span>🔒 Your data is private</span>
               <span>•</span>
-              <span>✨ Founder pricing locked while in beta</span>
+              <span>📖 A printed book when you want one</span>
               <span>•</span>
               <span>🐾 A new letter every day</span>
             </div>

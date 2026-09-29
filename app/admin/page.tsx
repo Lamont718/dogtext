@@ -140,7 +140,7 @@ export default async function AdminPage() {
           <ul className="text-sm text-gray-700 space-y-1">
             {Object.entries(bySource).map(([k, v]) => (
               <li key={k} className="flex justify-between">
-                <span>{k === 'demo' ? 'Homepage demo' : k === 'plan' ? 'Premium list' : k === 'direct' ? 'Signup page' : k}</span>
+                <span>{k === 'demo' ? 'Homepage demo' : k === 'plan' ? 'Old Premium list' : k === 'direct' ? 'Signup page' : k}</span>
                 <span className="font-semibold">{v}</span>
               </li>
             ))}
@@ -172,20 +172,6 @@ export default async function AdminPage() {
             </li>
           ))}
           {!bookReservations.length && <li className="text-gray-500">Nobody yet.</li>}
-        </ul>
-      </div>
-
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 mb-8">
-        <h2 className="font-semibold text-gray-900 mb-1">Premium list ({waitlist.length})</h2>
-        <p className="text-sm text-gray-500 mb-3">People to email, at today&apos;s price, when paid plans open.</p>
-        <ul className="text-sm text-gray-700 space-y-1">
-          {waitlist.map((w) => (
-            <li key={w.email} className="flex justify-between gap-4">
-              <span className="truncate">{w.firstName ? `${w.firstName} · ` : ''}{w.email}</span>
-              <span className="shrink-0 text-gray-500">{w.interestedPlan === 'FAMILY' ? 'Family' : 'Premium'}</span>
-            </li>
-          ))}
-          {!waitlist.length && <li className="text-gray-500">Nobody yet.</li>}
         </ul>
       </div>
 

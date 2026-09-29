@@ -284,31 +284,23 @@ export default function SettingsPage() {
             <CardContent className="space-y-6">
               <div className="bg-[#FFF8F0] p-4 rounded-lg">
                 <h3 className="font-medium text-gray-900 mb-1">
-                  {data.subscriptionTier === 'FREE'
-                    ? 'Free plan'
-                    : data.subscriptionTier === 'PREMIUM'
-                    ? 'Premium plan'
-                    : 'Family plan'}
+                  Free
                 </h3>
                 <p className="text-sm text-gray-700">
-                  {data.subscriptionTier === 'FREE'
-                    ? "You're on the free plan. Paid billing isn't open yet — sign up will be ready soon."
-                    : "You're an active paid member. Thanks for supporting DogText."}
+                  The daily letters are free. The only thing we sell is the printed book.
                 </p>
               </div>
 
               <div className="space-y-2">
                 <h3 className="font-medium">Billing history</h3>
                 <p className="text-sm text-gray-600">
-                  No invoices yet — we'll show them here once paid plans go live.
+                  No orders yet. Book orders will show here.
                 </p>
               </div>
 
-              {data.subscriptionTier === 'FREE' && (
-                <Button asChild>
-                  <Link href="/premium">See pricing</Link>
-                </Button>
-              )}
+              <Button asChild>
+                <Link href="/dashboard/book">See your book</Link>
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
