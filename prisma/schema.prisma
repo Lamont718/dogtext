@@ -334,3 +334,17 @@ model DemoRun {
   @@index([createdAt])
   @@map("demo_runs")
 }
+
+// A homepage-demo text someone chose to share (they tapped Share). Public at
+// /t/[id]. Only texts the demo actually generated can be saved (signed in
+// /api/generate-dog-messages, checked in /api/share-text).
+model SharedText {
+  id        String   @id @default(cuid())
+  dogName   String
+  breed     String   // display name
+  message   String   @db.Text
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("shared_texts")
+}

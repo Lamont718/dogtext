@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { DEMO_BREEDS, type DemoBreedSlug, savePendingDog } from '../lib/dog-voice';
+import ShareDemoText from '../components/demo/share-demo-text';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -69,6 +70,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
     }
   }, []);
   const [generatedMessages, setGeneratedMessages] = useState<string[]>([]);
+  const [signatures, setSignatures] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
 
@@ -112,6 +114,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
       
       if (data.messages) {
         setGeneratedMessages(data.messages);
+        setSignatures(Array.isArray(data.signatures) ? data.signatures : []);
         setShowMessages(true);
       } else {
         alert(data.error || 'Sorry, there was an error generating messages. Please try again.');
@@ -461,9 +464,17 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.3 }}
-                      className="bg-gray-100 dark:bg-muted rounded-3xl rounded-tl-md px-5 py-4 max-w-[88%]"
+                      className="max-w-[88%]"
                     >
-                      <p className="text-lg text-[#2C2C2C] dark:text-gray-100 leading-relaxed">{message}</p>
+                      <div className="bg-gray-100 dark:bg-muted rounded-3xl rounded-tl-md px-5 py-4">
+                        <p className="text-lg text-[#2C2C2C] dark:text-gray-100 leading-relaxed">{message}</p>
+                      </div>
+                      <ShareDemoText
+                        dogName={dogName}
+                        breed={breed}
+                        message={message}
+                        signature={signatures[index]}
+                      />
                     </motion.div>
                   ))}
                 </div>

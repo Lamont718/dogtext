@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '../../../lib/rate-limit';
 import { prisma } from '../../../lib/db';
+import { signText } from '../../../lib/text-signature';
 import {
   DEMO_BREEDS,
   DEMO_TRAITS,
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'AI service not configured' }, { status: 503 });
   }
 
-  let body;
+  let body: z.infer<typeof Body>;
   try {
     body = Body.parse(await request.json());
   } catch {
@@ -108,7 +109,9 @@ Return JSON: {"messages": ["...", "...", "..."]}`;
       .create({ data: { breed: body.breed, fromBreedPage: body.fromBreedPage ?? false } })
       .catch(() => {});
 
-    return NextResponse.json({ messages });
+    // Each text is signed so the visitor can share it later (/api/share-text).
+    const signatures = messages.map((m) => signText(body.dogName, body.breed, m));
+    return NextResponse.json({ messages, signatures });
   } catch (error) {
     console.error('Error generating dog messages:', error);
     return NextResponse.json({ error: 'Failed to generate messages' }, { status: 500 });

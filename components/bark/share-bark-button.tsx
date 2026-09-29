@@ -7,6 +7,8 @@ import { Button } from '../ui/button';
 
 interface ShareBarkButtonProps {
   barkId: string;
+  /** Public page of the text; its picture is at <basePath>/story. Default /bark/<barkId>. */
+  basePath?: string;
   dogName: string;
   size?: 'sm' | 'default' | 'lg';
   className?: string;
@@ -14,7 +16,8 @@ interface ShareBarkButtonProps {
 
 // Shares the bark as a story-sized picture: on phones it opens the share sheet
 // (Instagram, TikTok, Messages...), on computers it downloads the image.
-export default function ShareBarkButton({ barkId, dogName, size = 'sm', className }: ShareBarkButtonProps) {
+export default function ShareBarkButton({ barkId, basePath, dogName, size = 'sm', className }: ShareBarkButtonProps) {
+  const page = basePath ?? `/bark/${barkId}`;
   const [file, setFile] = useState<File | null>(null);
   const fileName = `${dogName.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'dog'}-text.png`;
 
@@ -22,7 +25,7 @@ export default function ShareBarkButton({ barkId, dogName, size = 'sm', classNam
   // it happens right on the tap, not after waiting for a download.
   useEffect(() => {
     let cancelled = false;
-    fetch(`/bark/${barkId}/story`)
+    fetch(`${page}/story`)
       .then((r) => (r.ok ? r.blob() : null))
       .then((blob) => {
         if (!cancelled && blob) setFile(new File([blob], fileName, { type: 'image/png' }));
@@ -31,7 +34,7 @@ export default function ShareBarkButton({ barkId, dogName, size = 'sm', classNam
     return () => {
       cancelled = true;
     };
-  }, [barkId, fileName]);
+  }, [page, fileName]);
 
   const download = (blob: Blob) => {
     const url = URL.createObjectURL(blob);
@@ -43,7 +46,7 @@ export default function ShareBarkButton({ barkId, dogName, size = 'sm', classNam
   };
 
   const onShare = async () => {
-    const image = file ?? (await fetch(`/bark/${barkId}/story`).then((r) => (r.ok ? r.blob() : null)).catch(() => null));
+    const image = file ?? (await fetch(`${page}/story`).then((r) => (r.ok ? r.blob() : null)).catch(() => null));
     if (!image) {
       toast.error("Couldn't make the picture. Try again.");
       return;
@@ -63,7 +66,7 @@ export default function ShareBarkButton({ barkId, dogName, size = 'sm', classNam
 
   const onCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/bark/${barkId}`);
+      await navigator.clipboard.writeText(`${window.location.origin}${page}`);
       toast.success('Link copied. Paste it anywhere.');
     } catch {
       toast.error('Could not copy the link. Try again.');

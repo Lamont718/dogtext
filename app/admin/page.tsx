@@ -56,6 +56,8 @@ export default async function AdminPage() {
     waitlist,
     pendingCelebrations,
     recent,
+    demoShares,
+    demoShareViews,
   ] = await Promise.all([
     prisma.user.count({ where: REAL_USER }),
     prisma.user.count({ where: { ...REAL_USER, createdAt: { gte: week } } }),
@@ -91,6 +93,8 @@ export default async function AdminPage() {
       orderBy: { createdAt: 'desc' },
       take: 15,
     }),
+    prisma.sharedText.count(),
+    prisma.sharedText.aggregate({ _sum: { views: true } }),
   ]);
 
   const bySource = Object.fromEntries(sources.map((s) => [s.signupSource ?? 'before tracking', s._count]));
@@ -110,7 +114,10 @@ export default async function AdminPage() {
         <Stat label="Tried the demo" value={demoRuns} sub={`${demoRunsWeek} this week · ${demoFromBreed} from breed guides`} />
         <Stat label="Members" value={members} sub={`${membersWeek} new this week`} />
         <Stat label="Demo → signup" value={`${signupRate}%`} sub={`${bySource.demo ?? 0} signed up from the demo`} />
-        <Stat label="Shared text views" value={shareViews._sum.shareCount ?? 0} sub="visits to shared text pages" />
+        <Stat label="Shared text views" value={(shareViews._sum.shareCount ?? 0) + (demoShareViews._sum.views ?? 0)} sub="visits to shared text pages" />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 -mt-5 mb-8">
+        <Stat label="Demo texts shared" value={demoShares} sub={`${demoShareViews._sum.views ?? 0} views of those`} />
       </div>
 
       <h2 className="text-lg font-semibold text-gray-900 mb-3">Coming back</h2>
