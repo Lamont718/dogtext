@@ -101,7 +101,20 @@ export async function generateDailyBark(inputs: BarkInputs): Promise<string | nu
   }
 }
 
-export function todayUtc(): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+export const DEFAULT_TIMEZONE = 'America/New_York';
+
+/**
+ * Today's calendar date where the member lives, as UTC midnight of that date
+ * (the shape DailyBark.generatedFor stores). Using the UTC date instead made
+ * "this morning's" text roll over at 8pm in New York.
+ */
+export function todayFor(timeZone: string | null | undefined, now = new Date()): Date {
+  let ymd: string;
+  try {
+    ymd = new Intl.DateTimeFormat('en-CA', { timeZone: timeZone || DEFAULT_TIMEZONE }).format(now);
+  } catch {
+    ymd = new Intl.DateTimeFormat('en-CA', { timeZone: DEFAULT_TIMEZONE }).format(now);
+  }
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
 }

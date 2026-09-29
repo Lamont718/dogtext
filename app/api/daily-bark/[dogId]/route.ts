@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
-import { generateDailyBark, todayUtc } from '@/lib/daily-bark';
+import { generateDailyBark, todayFor } from '@/lib/daily-bark';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,10 @@ export async function GET(
     return NextResponse.json({ error: 'Dog not found' }, { status: 404 });
   }
 
-  const today = todayUtc();
+  const settings = await prisma.userSettings
+    .findUnique({ where: { userId: session.user.id }, select: { timezone: true } })
+    .catch(() => null);
+  const today = todayFor(settings?.timezone);
 
   let bark;
   try {

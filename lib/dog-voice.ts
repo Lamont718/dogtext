@@ -17,6 +17,8 @@ export const DEMO_BREEDS = {
   husky: 'Siberian Husky',
   corgi: 'Corgi',
   chihuahua: 'Chihuahua',
+  'border-collie': 'Border Collie',
+  cavalier: 'Cavalier King Charles Spaniel',
   mixed: 'Mixed Breed',
   other: 'Other',
 } as const;
@@ -29,7 +31,7 @@ export const SIGNUP_BREEDS = [
   'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'French Bulldog',
   'Bulldog', 'Poodle', 'Beagle', 'Rottweiler', 'Yorkshire Terrier', 'Dachshund',
   'Siberian Husky', 'Boxer', 'Corgi', 'Boston Terrier', 'Shih Tzu', 'Chihuahua',
-  'Border Collie', 'Australian Shepherd', 'Cocker Spaniel', 'Maltese', 'Pomeranian',
+  'Border Collie', 'Cavalier King Charles Spaniel', 'Australian Shepherd', 'Cocker Spaniel', 'Maltese', 'Pomeranian',
   'Great Dane', 'Pit Bull', 'Mixed Breed', 'Other',
 ] as const;
 

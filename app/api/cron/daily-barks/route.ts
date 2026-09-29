@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { generateDailyBark, todayUtc } from '@/lib/daily-bark';
+import { generateDailyBark, todayFor } from '@/lib/daily-bark';
 import { sendDailyBarkEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +22,6 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const today = todayUtc();
 
   const eligible = await prisma.user.findMany({
     where: {
@@ -34,6 +33,7 @@ export async function GET(req: NextRequest) {
       id: true,
       email: true,
       firstName: true,
+      settings: { select: { timezone: true } },
       dogs: {
         where: { isActive: true },
         take: 1,
@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
   const errors: string[] = [];
 
   for (const user of eligible) {
+    const today = todayFor(user.settings?.timezone);
     const dog = user.dogs[0];
     if (!dog) {
       stats.skipped++;

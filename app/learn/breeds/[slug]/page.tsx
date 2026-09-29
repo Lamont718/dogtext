@@ -8,6 +8,7 @@ import {
   Users, MapPin, ArrowLeft,
 } from 'lucide-react';
 import { prisma } from '@/lib/db';
+import { BREED_TEXTS } from '@/lib/breed-texts';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +29,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   });
   if (!breed) return { title: 'Breed not found | DogText' };
   return {
-    title: `${breed.breedName} — Breed Guide | DogText`,
+    title: `${breed.breedName} Personality & Care Guide | DogText`,
     description: breed.description.slice(0, 160),
+    openGraph: {
+      title: `What would your ${breed.breedName} text you?`,
+      description: `${breed.breedName} temperament, care and training in plain language, plus a free morning text from your dog.`,
+    },
   };
 }
 
@@ -39,6 +44,8 @@ export default async function BreedPage({ params }: { params: { slug: string } }
   });
 
   if (!breed) notFound();
+  const sample = BREED_TEXTS[breed.slug];
+  const tryHref = sample ? `/?breed=${sample.demoBreed}#try` : '/#try';
 
   const badges = [
     breed.sizeCategory && SIZE_LABEL[breed.sizeCategory] && `${SIZE_LABEL[breed.sizeCategory]} breed`,
@@ -83,6 +90,46 @@ export default async function BreedPage({ params }: { params: { slug: string } }
           <p className="text-lg text-gray-700 leading-relaxed">{breed.description}</p>
         </div>
       </div>
+
+      {sample && (
+        <div className="mb-10 rounded-2xl bg-gradient-to-br from-[#FF8C42] to-[#FFB6C1] p-6 sm:p-8">
+          <p className="text-sm font-bold tracking-wider text-white/90 mb-4">
+            WHAT A {breed.breedName.toUpperCase()} TEXTS YOU
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2 items-center">
+            <div className="bg-white rounded-3xl shadow-xl p-5">
+              <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF8C42] to-[#FFB380] flex items-center justify-center text-white font-bold">
+                  {sample.dogName.charAt(0)}
+                </div>
+                <div>
+                  <div className="font-semibold text-[#2C2C2C]">{sample.dogName}</div>
+                  <div className="text-xs text-gray-500">your dog · {breed.breedName}</div>
+                </div>
+              </div>
+              <div className="text-xs text-gray-400 text-center mt-3 mb-2">Today 7:47 AM</div>
+              <div className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3 text-[15px] leading-relaxed text-[#2C2C2C]">
+                {sample.message}
+              </div>
+            </div>
+            <div className="text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+                What would your {breed.breedName} text you?
+              </h2>
+              <p className="text-white/95 mb-5">
+                DogText writes your dog a text every morning, in their voice, built from their breed
+                and personality. Free.
+              </p>
+              <Link
+                href={tryHref}
+                className="inline-block bg-white text-[#FF8C42] hover:bg-white/90 font-semibold px-6 py-3 rounded-full shadow-lg"
+              >
+                Try it with your dog →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
@@ -187,13 +234,13 @@ export default async function BreedPage({ params }: { params: { slug: string } }
           Curious what your {breed.breedName} would say?
         </h2>
         <p className="text-gray-700 mb-6">
-          Try the AI demo on the homepage, or sign up to chat with your own dog.
+          Tell us their name and personality and see three texts in seconds. Free.
         </p>
         <Link
-          href="/auth/signup"
+          href={tryHref}
           className="inline-block bg-[#FF8C42] hover:bg-[#FF6B1A] text-white font-semibold px-6 py-3 rounded-full transition-colors"
         >
-          Create your free account
+          Try it with your dog
         </Link>
       </div>
     </div>

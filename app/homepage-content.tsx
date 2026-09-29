@@ -58,6 +58,12 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
   const [dogName, setDogName] = useState('');
   const [breed, setBreed] = useState('');
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+
+  // Arriving from a breed guide (/?breed=beagle#try): start the demo on that breed.
+  useEffect(() => {
+    const b = new URLSearchParams(window.location.search).get('breed');
+    if (b && b in DEMO_BREEDS) setBreed(b);
+  }, []);
   const [generatedMessages, setGeneratedMessages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
@@ -322,9 +328,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
       <section id="try" className="py-20 bg-white dark:bg-background scroll-mt-16">
         <div className="container max-w-4xl mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={false}
             className="text-center mb-12"
           >
             <h2 className="text-4xl lg:text-5xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-4">
@@ -336,10 +340,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            initial={false}
             className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12"
           >
             {!showMessages ? (
@@ -383,22 +384,11 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                     className="w-full text-base p-4 rounded-xl border-2 border-gray-200 focus:border-[#FF8C42] focus:outline-none"
                   >
                     <option value="">Select a breed...</option>
-                    <option value="golden-retriever">Golden Retriever</option>
-                    <option value="labrador">Labrador Retriever</option>
-                    <option value="german-shepherd">German Shepherd</option>
-                    <option value="french-bulldog">French Bulldog</option>
-                    <option value="beagle">Beagle</option>
-                    <option value="poodle">Poodle</option>
-                    <option value="bulldog">Bulldog</option>
-                    <option value="rottweiler">Rottweiler</option>
-                    <option value="yorkshire-terrier">Yorkshire Terrier</option>
-                    <option value="boxer">Boxer</option>
-                    <option value="dachshund">Dachshund</option>
-                    <option value="husky">Siberian Husky</option>
-                    <option value="corgi">Corgi</option>
-                    <option value="chihuahua">Chihuahua</option>
-                    <option value="mixed">Mixed Breed</option>
-                    <option value="other">Other</option>
+                    {Object.entries(DEMO_BREEDS).map(([slug, name]) => (
+                      <option key={slug} value={slug}>
+                        {name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
