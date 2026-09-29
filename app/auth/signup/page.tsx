@@ -30,6 +30,8 @@ export default function SignupPage() {
   const [demoDog, setDemoDog] = useState<PendingDog | null>(null);
   // Came from 'Join the list' on the pricing page.
   const [plan, setPlan] = useState<'PREMIUM' | 'FAMILY' | null>(null);
+  // Remembered even if they tap 'Change' on the demo dog.
+  const [fromDemo, setFromDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +46,7 @@ export default function SignupPage() {
     const pending = readPendingDog();
     if (!pending) return;
     setDemoDog(pending);
+    setFromDemo(true);
     setDogName(pending.dogName);
     setBreed((SIGNUP_BREEDS as readonly string[]).includes(pending.breed) ? pending.breed : 'Other');
     setTraits(pending.traits.slice(0, 3));
@@ -78,6 +81,7 @@ export default function SignupPage() {
           password,
           dog: { name: dogName, breed, traits },
           ...(plan ? { plan } : {}),
+          source: fromDemo ? 'demo' : plan ? 'plan' : 'direct',
         }),
       });
 

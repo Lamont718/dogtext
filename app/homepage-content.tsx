@@ -58,11 +58,15 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
   const [dogName, setDogName] = useState('');
   const [breed, setBreed] = useState('');
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const [fromBreedPage, setFromBreedPage] = useState(false);
 
   // Arriving from a breed guide (/?breed=beagle#try): start the demo on that breed.
   useEffect(() => {
     const b = new URLSearchParams(window.location.search).get('breed');
-    if (b && b in DEMO_BREEDS) setBreed(b);
+    if (b && b in DEMO_BREEDS) {
+      setBreed(b);
+      setFromBreedPage(true);
+    }
   }, []);
   const [generatedMessages, setGeneratedMessages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -99,7 +103,8 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
           ownerName,
           dogName,
           breed,
-          traits: selectedTraits
+          traits: selectedTraits,
+          fromBreedPage,
         })
       });
 

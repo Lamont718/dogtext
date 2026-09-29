@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '../../../lib/rate-limit';
+import { prisma } from '../../../lib/db';
 import {
   DEMO_BREEDS,
   DEMO_TRAITS,
@@ -19,6 +20,8 @@ const Body = z.object({
   dogName: z.string().trim().min(1).max(30),
   breed: z.enum(ALLOWED_BREEDS),
   traits: z.array(z.enum(DEMO_TRAITS)).length(3),
+  // Arrived from a breed guide's 'Try it with your dog' (for /admin counts).
+  fromBreedPage: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -100,6 +103,10 @@ Return JSON: {"messages": ["...", "...", "..."]}`;
     if (messages.length === 0) {
       return NextResponse.json({ error: 'No messages generated' }, { status: 502 });
     }
+
+    await prisma.demoRun
+      .create({ data: { breed: body.breed, fromBreedPage: body.fromBreedPage ?? false } })
+      .catch(() => {});
 
     return NextResponse.json({ messages });
   } catch (error) {

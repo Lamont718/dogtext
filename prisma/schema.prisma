@@ -50,6 +50,8 @@ model User {
   // FAMILY. The people to email, at their launch price, when billing opens.
   interestedPlan    String?
   interestedAt      DateTime?
+  // Where they signed up from: demo (homepage demo), plan (pricing list), direct.
+  signupSource      String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -319,4 +321,16 @@ model PushSubscription {
 
   @@index([userId])
   @@map("push_subscriptions")
+}
+
+// One row per homepage demo run: how many people try it, and which breeds.
+// No names or other personal details are kept.
+model DemoRun {
+  id        String   @id @default(cuid())
+  breed     String
+  fromBreedPage Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("demo_runs")
 }
