@@ -920,7 +920,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               </h2>
               <p className="text-lg text-[#6B6B6B] dark:text-gray-400 mb-6">
                 A month of your dog&apos;s letters, printed as a softcover book: your dog&apos;s photo on the
-                cover, one letter per page, mailed to your door. ${BOOK_PRICE_USD} plus shipping. Printing opens soon.
+                cover, one letter per page, mailed to your door. ${BOOK_PRICE_USD} plus shipping, once there&apos;s a month of letters.
               </p>
               <Button asChild className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white rounded-full px-8 py-6 text-base font-semibold">
                 <Link href="/book">See the book</Link>

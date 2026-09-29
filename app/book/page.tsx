@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, Heart, Printer, Gift } from 'lucide-react';
-import { BOOK_PRICE_USD, FIRST_BOOK_LETTERS } from '@/lib/book';
+import { BOOK_PRICE_USD, BOOK_SHIPPING_USD, FIRST_BOOK_LETTERS } from '@/lib/book';
 
 export const metadata = {
   title: "The Book | DogText",
@@ -38,10 +38,10 @@ export default function BookInfoPage() {
 
       <div className="rounded-2xl bg-[#FFF8F0] p-8 text-center">
         <p className="text-5xl font-bold text-gray-900">${BOOK_PRICE_USD}</p>
-        <p className="text-gray-500 mt-1">plus shipping</p>
+        <p className="text-gray-500 mt-1">plus ${BOOK_SHIPPING_USD.toFixed(2)} shipping (US)</p>
         <p className="text-gray-600 mt-2 mb-6">
-          Printing opens soon. Start the free letters now, and reserve your book from the dashboard once your
-          dog has written a few. You&apos;ll see the final price before you pay anything.
+          Start the free letters now. Once your dog has written {FIRST_BOOK_LETTERS} letters (a month), order the book
+          from your dashboard and it&apos;s printed and mailed to you.
         </p>
         <Link
           href="/#try"

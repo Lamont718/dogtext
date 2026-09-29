@@ -10,12 +10,11 @@ export const FIRST_BOOK_LETTERS = 30;
 export const BOOK_TRIM_IN = 8; // 8 x 8 in square
 export const BOOK_BLEED_IN = 0.125; // Mixam's standard bleed on every edge
 
-// Flat US shipping, charged on top at checkout. ⚠ Placeholder until Lamont
-// confirms Mixam's real one-copy shipping cost.
+// Flat US shipping, charged on top at checkout (set by Lamont 2026-09-29).
 export const BOOK_SHIPPING_USD = 7.99;
 
-// Checkout is off until BOOK_ORDERS_OPEN=1 is set in Vercel (so nobody pays a
-// guessed shipping price). Until then parents reserve.
+// Checkout runs only while BOOK_ORDERS_OPEN=1 is set in Vercel (turned on
+// 2026-09-29). Unset it to pause orders; parents can still reserve.
 export function bookOrdersOpen(): boolean {
   return process.env.BOOK_ORDERS_OPEN === '1';
 }
