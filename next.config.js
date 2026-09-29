@@ -9,6 +9,10 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   images: { unoptimized: true },
+  // Premium was dropped (2026-09-29); the book is what DogText sells.
+  async redirects() {
+    return [{ source: '/premium', destination: '/book', permanent: true }];
+  },
 };
 
 module.exports = nextConfig;
