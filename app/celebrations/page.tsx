@@ -83,10 +83,13 @@ export default function CelebrationsPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    // milestoneDate is a calendar day stored as UTC midnight; read it as UTC
+    // or it shows the day before in the US.
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
   };
 
@@ -112,7 +115,7 @@ export default function CelebrationsPage() {
               </Button>
             </Link>
             <Link href="/dashboard">
-              <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
+              <Button variant="default" size="sm" className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white">
                 <Sparkles className="h-4 w-4 mr-2" />
                 Share Your Milestone
               </Button>
@@ -159,7 +162,7 @@ export default function CelebrationsPage() {
               Be the first to share a special milestone with our community!
             </p>
             <Link href="/dashboard">
-              <Button className="bg-amber-600 hover:bg-amber-700">
+              <Button className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white">
                 Share Your Milestone
               </Button>
             </Link>

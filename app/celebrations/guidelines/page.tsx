@@ -38,12 +38,12 @@ export default function GuidelinesPage() {
                 Who Can Submit?
               </h2>
               <p className="text-gray-700 mb-4">
-                Milestone celebrations are an exclusive feature for our{' '}
-                <strong>Premium</strong> and <strong>Family</strong> tier members.
+                Any DogText member can share a milestone for their own dog. Every post is
+                reviewed before it appears in the gallery.
               </p>
-              <Link href="/premium">
-                <Button className="bg-amber-600 hover:bg-amber-700">
-                  Upgrade to Premium
+              <Link href="/dashboard">
+                <Button className="bg-[#FF8C42] hover:bg-[#FF6B1A] text-white">
+                  Share a milestone
                 </Button>
               </Link>
             </div>
@@ -223,8 +223,8 @@ export default function GuidelinesPage() {
                     Review Time
                   </p>
                   <p className="text-amber-800 text-sm">
-                    Most submissions are reviewed within 24-48 hours. You'll be
-                    notified via email once your celebration is approved.
+                    Every submission is reviewed by a person, usually within a few days.
+                    Once it's approved it appears in the gallery.
                   </p>
                 </div>
               </div>

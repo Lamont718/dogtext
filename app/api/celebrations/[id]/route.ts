@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
-import { deleteFile } from '@/lib/s3';
 import { isAdminEmail } from '@/lib/admin';
 
 // DELETE /api/celebrations/[id] - Delete a celebration (admin or owner)
@@ -56,15 +55,7 @@ export async function DELETE(
       );
     }
 
-    // Delete photo from S3
-    try {
-      await deleteFile(celebration.cloudStoragePath);
-    } catch (error) {
-      console.error('Error deleting photo from S3:', error);
-      // Continue with deletion even if S3 delete fails
-    }
-
-    // Delete celebration from database
+    // Delete celebration from database (its photo goes with it)
     await prisma.celebration.delete({
       where: { id: celebrationId },
     });

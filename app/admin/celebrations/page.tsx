@@ -304,7 +304,16 @@ export default function AdminCelebrationsPage() {
                   {/* Milestone Date */}
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Calendar className="h-4 w-4" />
-                    <span>Milestone: {formatDate(celebration.milestoneDate)}</span>
+                    <span>
+                      Milestone:{' '}
+                      {/* a calendar day stored as UTC midnight */}
+                      {new Date(celebration.milestoneDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        timeZone: 'UTC',
+                      })}
+                    </span>
                   </div>
 
                   {/* Submitter Info */}
@@ -354,8 +363,8 @@ export default function AdminCelebrationsPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Reject Celebration</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Please provide a reason for rejecting this celebration. The
-                            user will be notified via email.
+                            Please provide a reason for rejecting this celebration. It&apos;s
+                            saved with the post; no email is sent to them yet.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="py-4">

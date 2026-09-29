@@ -21,6 +21,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Sparkles, Upload, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { shrinkToJpeg } from '@/lib/dog-photo';
 
 interface Dog {
   id: string;
@@ -82,15 +83,9 @@ function NewCelebrationForm() {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a JPEG, PNG, or WebP image');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+    // Any size is fine: it's shrunk to a 1080px JPEG before upload.
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please choose a photo');
       return;
     }
 
@@ -147,7 +142,14 @@ function NewCelebrationForm() {
       formData.append('milestoneType', milestoneType);
       formData.append('caption', caption);
       formData.append('milestoneDate', milestoneDate);
-      formData.append('photo', photo);
+      let jpeg: Blob;
+      try {
+        jpeg = await shrinkToJpeg(photo, { size: 1080 });
+      } catch {
+        toast.error("Couldn't read that photo. Try a JPG or PNG.");
+        return;
+      }
+      formData.append('photo', jpeg, 'photo.jpg');
 
       const response = await fetch('/api/celebrations', {
         method: 'POST',
@@ -193,9 +195,8 @@ function NewCelebrationForm() {
               Celebration Submitted!
             </h2>
             <p className="text-gray-600 mb-8 text-lg">
-              Your milestone celebration has been submitted for review. Our team will
-              review it within 24-48 hours, and you'll receive an email once it's
-              approved and live in the gallery.
+              Your milestone has been submitted for review. Once it&apos;s approved it will
+              appear in the gallery, usually within a few days.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild variant="outline" size="lg">
@@ -327,7 +328,7 @@ function NewCelebrationForm() {
 
               {/* Photo Upload */}
               <div className="space-y-2">
-                <Label htmlFor="photo">Photo * (Max 5MB, JPEG/PNG/WebP)</Label>
+                <Label htmlFor="photo">Photo *</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-amber-500 transition-colors">
                   {photoPreview ? (
                     <div className="space-y-4">
@@ -354,11 +355,11 @@ function NewCelebrationForm() {
                     <div>
                       <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-600 mb-2">Click to upload a photo</p>
-                      <p className="text-sm text-gray-500">JPEG, PNG, or WebP (Max 5MB)</p>
+                      <p className="text-sm text-gray-500">Straight from your phone is fine</p>
                       <Input
                         id="photo"
                         type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        accept="image/*"
                         onChange={handlePhotoChange}
                         className="mt-4"
                       />

@@ -1,31 +1,35 @@
-// Browser-side: turn whatever photo someone picks into a small square JPEG
-// and save it as their dog's photo. Keeps uploads ~50KB so photos can live
-// in the database (see DogPhoto in prisma/schema.prisma).
+// Browser-side: turn whatever photo someone picks into a small JPEG before it
+// is uploaded, so photos can live in the database (DogPhoto, CelebrationPhoto)
+// instead of a file-storage service.
 
-const SIZE = 512;
+interface ShrinkOptions {
+  /** Longest side in pixels (or the side of the square). */
+  size: number;
+  /** Center-crop to a square (dog avatars) instead of keeping the whole picture. */
+  square?: boolean;
+}
 
-async function toSquareJpeg(file: File): Promise<Blob> {
+export async function shrinkToJpeg(file: File, { size, square }: ShrinkOptions): Promise<Blob> {
   // createImageBitmap applies the phone's rotation info, so photos aren't sideways.
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const side = Math.min(bitmap.width, bitmap.height);
   const canvas = document.createElement('canvas');
-  canvas.width = SIZE;
-  canvas.height = SIZE;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('no canvas');
-  // Center crop; a dog's face is usually in the middle.
-  ctx.drawImage(
-    bitmap,
-    (bitmap.width - side) / 2,
-    (bitmap.height - side) / 2,
-    side,
-    side,
-    0,
-    0,
-    SIZE,
-    SIZE,
-  );
+
+  if (square) {
+    // Center crop; a dog's face is usually in the middle.
+    const side = Math.min(bitmap.width, bitmap.height);
+    canvas.width = size;
+    canvas.height = size;
+    ctx.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, size, size);
+  } else {
+    const scale = Math.min(1, size / Math.max(bitmap.width, bitmap.height));
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  }
   bitmap.close();
+
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('encode failed'))), 'image/jpeg', 0.85),
   );
@@ -35,7 +39,7 @@ async function toSquareJpeg(file: File): Promise<Blob> {
 export async function uploadDogPhoto(dogId: string, file: File): Promise<string> {
   let jpeg: Blob;
   try {
-    jpeg = await toSquareJpeg(file);
+    jpeg = await shrinkToJpeg(file, { size: 512, square: true });
   } catch {
     throw new Error("Couldn't read that photo. Try a JPG or PNG.");
   }

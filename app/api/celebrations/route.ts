@@ -3,151 +3,99 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
 import { prisma } from '@/lib/db';
-import { uploadFile } from '@/lib/s3';
 
-// POST /api/celebrations - Submit new celebration
+const MILESTONE_TYPES = [
+  'birthday',
+  'adoption_anniversary',
+  'gotcha_day',
+  'training_achievement',
+  'health_milestone',
+];
+// The browser shrinks photos to a 1080px JPEG before upload (lib/dog-photo.ts).
+const MAX_PHOTO_BYTES = 1.5 * 1024 * 1024;
+// Everything waits for review; this keeps one person from flooding the queue.
+const MAX_PENDING = 3;
+
+// POST /api/celebrations - Submit a new celebration (any member; reviewed before it shows)
 export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userId = session.user.id;
+
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check if user is Premium or Family tier
-    if (user.subscriptionTier === 'FREE') {
-      return NextResponse.json(
-        { error: 'Premium subscription required to submit celebrations' },
-        { status: 403 }
-      );
-    }
-
-    // Parse form data
     const formData = await req.formData();
-    const dogId = formData.get('dogId') as string;
-    const milestoneType = formData.get('milestoneType') as string;
-    const caption = formData.get('caption') as string;
-    const milestoneDate = formData.get('milestoneDate') as string;
-    const photo = formData.get('photo') as File;
+    const dogId = String(formData.get('dogId') || '');
+    const milestoneType = String(formData.get('milestoneType') || '');
+    const caption = String(formData.get('caption') || '').trim();
+    const milestoneDate = String(formData.get('milestoneDate') || '');
+    const photo = formData.get('photo');
 
-    // Validation
-    if (!dogId || !milestoneType || !caption || !milestoneDate || !photo) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
+    if (!dogId || !milestoneType || !caption || !milestoneDate || !(photo instanceof Blob)) {
+      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
-
-    // Validate caption length
     if (caption.length > 100) {
-      return NextResponse.json(
-        { error: 'Caption must be 100 characters or less' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Caption must be 100 characters or less' }, { status: 400 });
+    }
+    if (!MILESTONE_TYPES.includes(milestoneType)) {
+      return NextResponse.json({ error: 'Invalid milestone type' }, { status: 400 });
+    }
+    const date = new Date(milestoneDate);
+    if (Number.isNaN(date.getTime())) {
+      return NextResponse.json({ error: 'Invalid date' }, { status: 400 });
     }
 
-    // Validate milestone type
-    const validMilestoneTypes = [
-      'birthday',
-      'adoption_anniversary',
-      'gotcha_day',
-      'training_achievement',
-      'health_milestone',
-    ];
-    if (!validMilestoneTypes.includes(milestoneType)) {
-      return NextResponse.json(
-        { error: 'Invalid milestone type' },
-        { status: 400 }
-      );
+    const data = Buffer.from(await photo.arrayBuffer());
+    if (data.length === 0 || data.length > MAX_PHOTO_BYTES) {
+      return NextResponse.json({ error: 'That photo is too large. Try another one.' }, { status: 413 });
+    }
+    // JPEG files start FF D8 FF.
+    if (data[0] !== 0xff || data[1] !== 0xd8 || data[2] !== 0xff) {
+      return NextResponse.json({ error: 'Photo must be a JPEG.' }, { status: 415 });
     }
 
-    // Validate photo file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(photo.type)) {
-      return NextResponse.json(
-        { error: 'Photo must be JPEG, PNG, or WebP format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate photo size (max 5MB)
-    if (photo.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'Photo must be less than 5MB' },
-        { status: 400 }
-      );
-    }
-
-    // Get dog to verify ownership and get info
-    const dog = await prisma.dog.findUnique({
-      where: { id: dogId },
-    });
-
+    const [dog, pending] = await Promise.all([
+      prisma.dog.findFirst({ where: { id: dogId, userId, isActive: true } }),
+      prisma.celebration.count({ where: { userId, status: 'pending' } }),
+    ]);
     if (!dog) {
+      return NextResponse.json({ error: 'Dog not found' }, { status: 404 });
+    }
+    if (pending >= MAX_PENDING) {
       return NextResponse.json(
-        { error: 'Dog not found' },
-        { status: 404 }
+        { error: `You have ${MAX_PENDING} celebrations waiting for review. Once they're approved you can share more.` },
+        { status: 429 }
       );
     }
 
-    if (dog.userId !== user.id) {
-      return NextResponse.json(
-        { error: 'You can only submit celebrations for your own dogs' },
-        { status: 403 }
-      );
-    }
-
-    // Upload photo to S3
-    const buffer = Buffer.from(await photo.arrayBuffer());
-    const fileName = `celebrations/${Date.now()}-${photo.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const cloudStoragePath = await uploadFile(buffer, fileName);
-
-    // Generate a signed URL for the photo (valid for 7 days)
-    const { downloadFile } = await import('@/lib/s3');
-    const photoUrl = await downloadFile(cloudStoragePath);
-
-    // Create celebration record
-    const celebration = await prisma.celebration.create({
+    const created = await prisma.celebration.create({
       data: {
-        userId: user.id,
+        userId,
         dogId: dog.id,
         dogName: dog.name,
         dogBreed: dog.breed,
         milestoneType,
         caption,
-        milestoneDate: new Date(milestoneDate),
-        photoUrl,
-        cloudStoragePath,
+        milestoneDate: date,
+        photoUrl: '',
         status: 'pending', // Requires admin approval
+        photo: { create: { data, contentType: 'image/jpeg' } },
       },
+    });
+    const celebration = await prisma.celebration.update({
+      where: { id: created.id },
+      data: { photoUrl: `/api/celebrations/${created.id}/photo` },
     });
 
     return NextResponse.json({
       success: true,
       celebration,
-      message: 'Celebration submitted successfully! It will appear in the gallery once approved by our team.',
+      message: 'Celebration submitted! It will appear in the gallery once it has been reviewed.',
     });
   } catch (error) {
     console.error('Error submitting celebration:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit celebration' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to submit celebration' }, { status: 500 });
   }
 }
 
@@ -183,30 +131,17 @@ export async function GET(req: NextRequest) {
         milestoneType: true,
         caption: true,
         milestoneDate: true,
-        cloudStoragePath: true,
+        photoUrl: true,
         submittedAt: true,
       },
     });
-
-    // Generate fresh signed URLs for all photos
-    const { downloadFile } = await import('@/lib/s3');
-    const celebrationsWithUrls = await Promise.all(
-      celebrations.map(async (celebration) => {
-        const photoUrl = await downloadFile(celebration.cloudStoragePath);
-        return {
-          ...celebration,
-          photoUrl,
-          cloudStoragePath: undefined, // Don't expose S3 keys to client
-        };
-      })
-    );
 
     // Get total count for pagination
     const total = await prisma.celebration.count({ where });
 
     return NextResponse.json({
       success: true,
-      celebrations: celebrationsWithUrls,
+      celebrations,
       total,
       hasMore: offset + celebrations.length < total,
     });

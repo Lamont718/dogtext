@@ -274,19 +274,17 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        {isPremium && (
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className="border-amber-600 text-amber-600 hover:bg-amber-50"
-                          >
-                            <Link href={`/dashboard/celebrations/new?dogId=${dog.id}`}>
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              Add Milestone
-                            </Link>
-                          </Button>
-                        )}
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="border-[#FF8C42] text-[#FF8C42] hover:bg-[#FFF8F0]"
+                        >
+                          <Link href={`/dashboard/celebrations/new?dogId=${dog.id}`}>
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Milestone
+                          </Link>
+                        </Button>
                         <Button 
                           asChild 
                           className="bg-[#FF8C42] hover:bg-[#FF6B1A]"

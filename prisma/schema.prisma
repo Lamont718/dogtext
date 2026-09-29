@@ -267,8 +267,8 @@ model Celebration {
   dogName          String   // denormalized for display
   dogBreed         String   // denormalized for display
   milestoneType    String   // birthday, adoption_anniversary, gotcha_day, training_achievement, health_milestone
-  photoUrl         String
-  cloudStoragePath String   // S3 key for photo
+  photoUrl         String   // /api/celebrations/[id]/photo (photo kept in CelebrationPhoto)
+  cloudStoragePath String?  // legacy S3 key; unused since photos moved to the database
   caption          String   // max 100 characters
   milestoneDate    DateTime // the date of the milestone
   status           String   @default("pending") // pending, approved, rejected
@@ -280,9 +280,24 @@ model Celebration {
   updatedAt        DateTime @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photo CelebrationPhoto?
 
   @@map("celebrations")
   @@index([status, submittedAt])
   @@index([milestoneType, status])
+}
+
+// A celebration's photo, shrunk in the browser (max 1080px JPEG) and kept in
+// the database like DogPhoto. Public only once the celebration is approved.
+model CelebrationPhoto {
+  id            String   @id @default(cuid())
+  celebrationId String   @unique
+  data          Bytes
+  contentType   String   @default("image/jpeg")
+  createdAt     DateTime @default(now())
+
+  celebration Celebration @relation(fields: [celebrationId], references: [id], onDelete: Cascade)
+
+  @@map("celebration_photos")
 }

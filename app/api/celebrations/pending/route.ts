@@ -43,22 +43,10 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Generate fresh signed URLs for all photos
-    const { downloadFile } = await import('@/lib/s3');
-    const celebrationsWithUrls = await Promise.all(
-      celebrations.map(async (celebration) => {
-        const photoUrl = await downloadFile(celebration.cloudStoragePath);
-        return {
-          ...celebration,
-          photoUrl,
-        };
-      })
-    );
-
     return NextResponse.json({
       success: true,
-      celebrations: celebrationsWithUrls,
-      count: celebrationsWithUrls.length,
+      celebrations,
+      count: celebrations.length,
     });
   } catch (error) {
     console.error('Error fetching pending celebrations:', error);
