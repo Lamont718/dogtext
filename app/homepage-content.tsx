@@ -167,7 +167,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               </h1>
               <p className="text-xl text-white/95 mb-10 leading-relaxed max-w-xl">
                 In your dog&apos;s voice, in words kids understand. Read it at breakfast or
-                bedtime. At the end of the year, it&apos;s a book.
+                bedtime, and keep a year of them in a printed book (coming soon).
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">

@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://dogtext-tau.vercel.app'),
   title: 'DogText: letters from your dog to your kids',
-  description: 'Every day your family dog writes your kids a short letter in its own voice, in words they understand. Read it at breakfast or bedtime, and turn a year of letters into a book. Free.',
+  description: 'Every day your family dog writes your kids a short letter in its own voice, in words they understand. Read it at breakfast or bedtime. Free.',
   keywords: 'dog care, AI dog chat, pet training, dog breeds, dog health, pet companion',
   authors: [{ name: 'DogText Team' }],
   openGraph: {

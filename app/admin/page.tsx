@@ -58,6 +58,7 @@ export default async function AdminPage() {
     recent,
     demoShares,
     demoShareViews,
+    bookReservations,
   ] = await Promise.all([
     prisma.user.count({ where: REAL_USER }),
     prisma.user.count({ where: { ...REAL_USER, createdAt: { gte: week } } }),
@@ -95,6 +96,11 @@ export default async function AdminPage() {
     }),
     prisma.sharedText.count(),
     prisma.sharedText.aggregate({ _sum: { views: true } }),
+    prisma.user.findMany({
+      where: { ...REAL_USER, bookReservedAt: { not: null } },
+      select: { email: true, firstName: true, bookReservedAt: true, _count: { select: { dailyBarks: true, kids: true } } },
+      orderBy: { bookReservedAt: 'asc' },
+    }),
   ]);
 
   const bySource = Object.fromEntries(sources.map((s) => [s.signupSource ?? 'before tracking', s._count]));
@@ -153,6 +159,20 @@ export default async function AdminPage() {
             {!demoBreeds.length && <li className="text-gray-500">No demo runs yet.</li>}
           </ul>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-[#FFB88C] bg-white p-5 mb-8">
+        <h2 className="font-semibold text-gray-900 mb-1">Book reservations ({bookReservations.length})</h2>
+        <p className="text-sm text-gray-500 mb-3">Parents who want the printed book of their dog&apos;s letters. Email them the price when printing opens.</p>
+        <ul className="text-sm text-gray-700 space-y-1">
+          {bookReservations.map((b) => (
+            <li key={b.email} className="flex justify-between gap-4">
+              <span className="truncate">{b.firstName ? `${b.firstName} · ` : ''}{b.email}</span>
+              <span className="shrink-0 text-gray-500">{b._count.dailyBarks} letters · {b._count.kids} kids</span>
+            </li>
+          ))}
+          {!bookReservations.length && <li className="text-gray-500">Nobody yet.</li>}
+        </ul>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 mb-8">

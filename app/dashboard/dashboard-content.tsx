@@ -145,6 +145,16 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <KidsCard dogName={dogs[0].name} onChange={() => setLetterVersion((v) => v + 1)} />
             <NotifyCard dogName={dogs[0].name} />
+            <Link
+              href="/dashboard/book"
+              className="flex items-center gap-4 rounded-xl border border-[#FFB88C] bg-white p-5 hover:bg-[#FFF8F0] transition-colors"
+            >
+              <div className="w-11 h-11 rounded-full bg-[#FFF8F0] flex items-center justify-center shrink-0 text-xl">📖</div>
+              <div className="flex-1 text-sm text-gray-700">
+                <p className="font-semibold text-gray-900 mb-1">{dogs[0].name}&apos;s book</p>
+                <p>Every letter becomes a page. See how it&apos;s coming together.</p>
+              </div>
+            </Link>
           </div>
         </div>
       )}

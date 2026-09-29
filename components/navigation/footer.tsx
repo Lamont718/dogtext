@@ -15,8 +15,8 @@ export default function Footer() {
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100">DogText</span>
             </Link>
             <p className="text-gray-600 max-w-md">
-              AI-powered conversations with your dog, plain-language guidance for their
-              breed, and tools you'll actually use. Built by a dog dad in Brooklyn.
+              A daily letter from your dog to your kids, plus plain-language guides
+              for their breed. Built by a dog dad in Brooklyn.
             </p>
             <p className="text-xs text-gray-500 mt-4 max-w-md">
               We don't sell your data. Chats stay private and never train the AI.

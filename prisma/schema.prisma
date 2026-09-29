@@ -52,6 +52,8 @@ model User {
   interestedAt      DateTime?
   // Where they signed up from: demo (homepage demo), plan (pricing list), direct.
   signupSource      String?
+  // Reserved a printed book of the dog's letters (printing not open yet).
+  bookReservedAt    DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
