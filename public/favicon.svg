@@ -1,10 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <rect width="256" height="256" fill="#2563eb"/>
-  <g transform="translate(128, 128)">
-    <ellipse cx="0" cy="20" rx="35" ry="45" fill="#fb923c"/>
-    <ellipse cx="-25" cy="-15" rx="22" ry="32" fill="#fb923c" transform="rotate(-25 -25 -15)"/>
-    <ellipse cx="25" cy="-15" rx="22" ry="32" fill="#fb923c" transform="rotate(25 25 -15)"/>
-    <ellipse cx="-45" cy="5" rx="20" ry="28" fill="#fb923c" transform="rotate(-35 -45 5)"/>
-    <ellipse cx="45" cy="5" rx="20" ry="28" fill="#fb923c" transform="rotate(35 45 5)"/>
+  <rect width="256" height="256" rx="56" fill="#FF8C42"/>
+  <g transform="translate(40 44) scale(7.33)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
   </g>
 </svg>

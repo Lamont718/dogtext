@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import DogProfileForm from '../../components/dogs/dog-profile-form';
 import DailyBarkCard from '../../components/dashboard/daily-bark-card';
+import NotifyCard from '../../components/dashboard/notify-card';
 import { PawChatIllustration } from '../../components/illustrations/empty-state';
 
 import { Dog, User, MessageUsage } from '../../types/interfaces';
@@ -137,6 +138,9 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
                 dogPhotoUrl={dog.photoUrl}
               />
             ))}
+          </div>
+          <div className="mt-4">
+            <NotifyCard dogName={dogs[0].name} />
           </div>
         </div>
       )}

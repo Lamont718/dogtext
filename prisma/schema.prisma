@@ -63,6 +63,7 @@ model User {
   settings         UserSettings?
   celebrations     Celebration[]
   dailyBarks       DailyBark[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -249,6 +250,7 @@ model DailyBark {
   messageText   String    @db.Text
   viewedAt      DateTime?
   emailedAt     DateTime?
+  pushedAt      DateTime? // sent as a phone notification (lib/push.ts)
   shareCount    Int       @default(0)
   createdAt     DateTime  @default(now())
 
@@ -300,4 +302,21 @@ model CelebrationPhoto {
   celebration Celebration @relation(fields: [celebrationId], references: [id], onDelete: Cascade)
 
   @@map("celebration_photos")
+}
+
+// A phone or browser that gets the morning text as a notification (Web Push).
+// One row per device; a dead endpoint (404/410 from the push service) is deleted.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
