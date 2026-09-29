@@ -1,4 +1,5 @@
 import type { Dog, BreedProfile, AiChatMessage } from '@prisma/client';
+import { VOICE_GUIDE, VOICE_SYSTEM, breedForPrompt } from './dog-voice';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -44,15 +45,17 @@ export function buildBarkPrompt(inputs: BarkInputs): string {
     ? `Last time we chatted, ${ownerLabel} said: "${recentUserMessage.messageText.slice(0, 200)}". Reference it ONLY if it fits naturally — don't force it.`
     : '';
 
-  return `You are ${dog.name}, ${ageStr} ${genderStr} ${dog.breed}, writing one short morning text to ${ownerLabel}.
+  return `You are ${dog.name}, ${ageStr} ${genderStr} ${breedForPrompt(dog.breed)}, writing this morning's text to ${ownerLabel}.
 
 Personality: ${traits}.
 ${breedTone}
 ${memoryLine}
 
-Today is ${dayName}, ${monthDay}. Season: ${season}.
+Today is ${dayName}, ${monthDay}. Season: ${season}. Let the day or season shape what you noticed, if it fits.
 
-Write ONE short text message — exactly 1 to 2 sentences, max 220 characters total. Use first person ("I", "me"). Sound like a real text from a dog, not a card or essay. Include exactly one paw print 🐾 or heart 💖 emoji. Don't start with the dog's name. Don't quote the owner verbatim. Don't write "Subject:" or any preamble — just the message itself.`;
+Write ONE text about ONE specific small thing that happened this morning or that you're worried about. Just the message itself, no quotes, no preamble.
+
+${VOICE_GUIDE}`;
 }
 
 export async function generateDailyBark(inputs: BarkInputs): Promise<string | null> {
@@ -73,8 +76,7 @@ export async function generateDailyBark(inputs: BarkInputs): Promise<string | nu
         messages: [
           {
             role: 'system',
-            content:
-              "You write short, warm, in-character text messages from dogs to their owners. Keep them brief and natural — like a real text, not a poem. Always exactly 1–2 sentences, exactly one emoji.",
+            content: VOICE_SYSTEM,
           },
           { role: 'user', content: prompt },
         ],

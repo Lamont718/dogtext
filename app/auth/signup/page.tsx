@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,16 +11,37 @@ import { Label } from '../../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Eye, EyeOff } from 'lucide-react';
 import AuthShell from '../../../components/auth/auth-shell';
+import {
+  SIGNUP_BREEDS,
+  type PendingDog,
+  clearPendingDog,
+  readPendingDog,
+} from '../../../lib/dog-voice';
 
 export default function SignupPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [dogName, setDogName] = useState('');
+  const [breed, setBreed] = useState('');
+  const [traits, setTraits] = useState<string[]>([]);
+  // The dog from the homepage demo, shown as a summary instead of empty fields.
+  const [demoDog, setDemoDog] = useState<PendingDog | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const pending = readPendingDog();
+    if (!pending) return;
+    setDemoDog(pending);
+    setDogName(pending.dogName);
+    setBreed((SIGNUP_BREEDS as readonly string[]).includes(pending.breed) ? pending.breed : 'Other');
+    setTraits(pending.traits.slice(0, 3));
+    setFirstName((current) => current || pending.ownerName);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +54,23 @@ export default function SignupPage() {
       return;
     }
 
+    if (!dogName.trim() || !breed) {
+      setError("Tell us your dog's name and breed so they can text you.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email, password }),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+          dog: { name: dogName, breed, traits },
+        }),
       });
 
       const result = await response.json();
@@ -45,6 +79,8 @@ export default function SignupPage() {
         setError(result.error || 'Failed to create account');
         return;
       }
+
+      clearPendingDog();
 
       const signInResult = await signIn('credentials', {
         email,
@@ -64,12 +100,17 @@ export default function SignupPage() {
     }
   };
 
+  const title = demoDog ? `Get ${demoDog.dogName}'s texts` : 'Get texts from your dog';
+
   return (
     <AuthShell side="signup">
       <Card className="border-0 shadow-2xl">
         <CardHeader>
-          <CardTitle className="text-3xl">Create your account</CardTitle>
-          <CardDescription>Free forever — no credit card required.</CardDescription>
+          <CardTitle className="text-3xl">{title}</CardTitle>
+          <CardDescription>
+            Free forever, no credit card. You&apos;ll see the first one as soon as you sign up, then
+            a new one every morning.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,9 +120,64 @@ export default function SignupPage() {
               </div>
             )}
 
+            {demoDog ? (
+              <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8F0] px-4 py-3 dark:bg-muted">
+                <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-[#FF8C42] to-[#FFB380] flex items-center justify-center text-xl">
+                  🐕
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-[#2C2C2C] dark:text-gray-100">{dogName}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    {[breed, traits.join(', ').toLowerCase()].filter(Boolean).join(' · ')}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDemoDog(null)}
+                  className="text-sm font-medium text-[#FF8C42] hover:text-[#FF6B1A]"
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="dogName">Your dog&apos;s name</Label>
+                  <Input
+                    id="dogName"
+                    type="text"
+                    value={dogName}
+                    onChange={(e) => setDogName(e.target.value)}
+                    required
+                    maxLength={30}
+                    placeholder="Coco"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="breed">Breed</Label>
+                  <select
+                    id="breed"
+                    value={breed}
+                    onChange={(e) => setBreed(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                  >
+                    <option value="">Choose…</option>
+                    {SIGNUP_BREEDS.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="firstName">First name</Label>
+                <Label htmlFor="firstName">Your first name</Label>
                 <Input
                   id="firstName"
                   type="text"
@@ -99,7 +195,7 @@ export default function SignupPage() {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Last name (optional)"
+                  placeholder="Optional"
                   disabled={isLoading}
                 />
               </div>
@@ -116,6 +212,9 @@ export default function SignupPage() {
                 placeholder="you@example.com"
                 disabled={isLoading}
               />
+              <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                The morning texts come here.
+              </p>
             </div>
 
             <div>
@@ -153,7 +252,11 @@ export default function SignupPage() {
               className="w-full bg-[#FF8C42] hover:bg-[#FF6B1A] py-6 rounded-full text-base"
               disabled={isLoading}
             >
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading
+                ? 'Creating account...'
+                : dogName.trim()
+                  ? `See ${dogName.trim()}'s first text`
+                  : 'Create account'}
             </Button>
           </form>
 

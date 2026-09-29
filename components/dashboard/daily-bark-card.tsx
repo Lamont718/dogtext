@@ -160,10 +160,12 @@ export default function DailyBarkCard({
                     </Link>
                   </Button>
                   <span className="ml-auto text-xs text-gray-400">
+                    {/* generatedFor is a date-only UTC day; read it as UTC or it shows yesterday in the US. */}
                     {new Date(bark.generatedFor).toLocaleDateString('en-US', {
                       weekday: 'short',
                       month: 'short',
                       day: 'numeric',
+                      timeZone: 'UTC',
                     })}
                   </span>
                 </div>

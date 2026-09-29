@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { DEMO_BREEDS, type DemoBreedSlug, savePendingDog } from '../lib/dog-voice';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -103,6 +104,8 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
       if (data.messages) {
         setGeneratedMessages(data.messages);
         setShowMessages(true);
+      } else {
+        alert(data.error || 'Sorry, there was an error generating messages. Please try again.');
       }
     } catch (error) {
       console.error('Error generating messages:', error);
@@ -478,7 +481,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-[#2C2C2C] dark:text-gray-100">{dogName}</h3>
-                    <p className="text-[#6B6B6B] dark:text-gray-400 capitalize">{breed.replace('-', ' ')}</p>
+                    <p className="text-[#6B6B6B] dark:text-gray-400">{DEMO_BREEDS[breed as DemoBreedSlug] ?? breed}</p>
                   </div>
                 </div>
 
@@ -489,24 +492,37 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.3 }}
-                      className="bg-gradient-to-br from-[#FFB88C] to-[#FFB6C1] text-white p-6 rounded-3xl rounded-tl-sm shadow-lg max-w-[85%]"
+                      className="bg-gray-100 dark:bg-muted rounded-3xl rounded-tl-md px-5 py-4 max-w-[88%]"
                     >
-                      <p className="text-lg font-handwriting leading-relaxed">{message}</p>
+                      <p className="text-lg text-[#2C2C2C] dark:text-gray-100 leading-relaxed">{message}</p>
                     </motion.div>
                   ))}
                 </div>
 
                 <div className="text-center pt-8 border-t-2 border-gray-100">
-                  <p className="text-xl font-semibold text-[#2C2C2C] dark:text-gray-100 mb-6">
-                    Want messages like this every day?
+                  <p className="text-xl font-semibold text-[#2C2C2C] dark:text-gray-100 mb-2">
+                    Want a real one from {dogName} every morning?
+                  </p>
+                  <p className="text-[#6B6B6B] dark:text-gray-400 mb-6">
+                    Free. We'll keep {dogName}'s details. You just add your email.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
                       className="gradient-warm text-white px-8 py-6 text-lg rounded-full font-semibold hover:scale-105 transition-transform"
                       asChild
                     >
-                      <Link href="/auth/signup">
-                        Create Free Account 🐾
+                      <Link
+                        href="/auth/signup?from=demo"
+                        onClick={() =>
+                          savePendingDog({
+                            ownerName,
+                            dogName,
+                            breed: DEMO_BREEDS[breed as DemoBreedSlug] ?? 'Other',
+                            traits: selectedTraits,
+                          })
+                        }
+                      >
+                        Get {dogName}'s texts 🐾
                       </Link>
                     </Button>
                     <Button

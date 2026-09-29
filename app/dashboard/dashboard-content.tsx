@@ -94,7 +94,10 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Welcome back, {user.firstName || 'there'}!
+            {Date.now() - new Date(user.createdAt).getTime() < 24 * 60 * 60 * 1000
+              ? 'Welcome'
+              : 'Welcome back'}
+            , {user.firstName || 'there'}!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Manage your dogs and explore everything DogText has to offer.

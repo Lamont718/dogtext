@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../../../lib/db';
 import { getClientIp, rateLimit } from '../../../lib/rate-limit';
+import { SIGNUP_BREEDS } from '../../../lib/dog-voice';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,23 @@ const Body = z.object({
   password: z.string().min(8).max(128),
   firstName: z.string().trim().min(1).max(50),
   lastName: z.string().trim().max(50).optional(),
+  // The dog comes with the account: no dog, no morning text.
+  dog: z.object({
+    name: z.string().trim().min(1).max(30),
+    breed: z.enum(SIGNUP_BREEDS),
+    // Title case to match the dashboard's dog form ("Playful", not "playful").
+    traits: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1)
+          .max(20)
+          .transform((t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()),
+      )
+      .max(3)
+      .default([]),
+  }),
 });
 
 export async function POST(request: NextRequest) {
@@ -53,6 +71,14 @@ export async function POST(request: NextRequest) {
         lastName: parsed.lastName,
         subscriptionTier: 'FREE',
         settings: { create: {} },
+        dogs: {
+          create: {
+            name: parsed.dog.name,
+            breed: parsed.dog.breed,
+            personalityTraits: parsed.dog.traits,
+            healthConditions: [],
+          },
+        },
       },
     });
 

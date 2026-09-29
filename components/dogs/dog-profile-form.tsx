@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 import { Upload, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+import { SIGNUP_BREEDS } from '../../lib/dog-voice';
 
 const MAX_TRAITS = 3;
 
@@ -36,16 +37,12 @@ interface DogProfileFormProps {
 
 const personalityOptions = [
   'Playful', 'Calm', 'Energetic', 'Gentle', 'Protective', 'Friendly',
-  'Independent', 'Loyal', 'Curious', 'Affectionate', 'Intelligent', 'Stubborn'
+  'Independent', 'Loyal', 'Curious', 'Affectionate', 'Intelligent', 'Stubborn',
+  // Also offered in the homepage demo, so a dog made there edits cleanly here.
+  'Goofy', 'Silly', 'Smart', 'Cuddly'
 ];
 
-const popularBreeds = [
-  'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Bulldog', 'Poodle',
-  'Beagle', 'Rottweiler', 'Yorkshire Terrier', 'Dachshund', 'Siberian Husky',
-  'Boxer', 'Boston Terrier', 'Shih Tzu', 'Chihuahua', 'Border Collie',
-  'Australian Shepherd', 'Cocker Spaniel', 'Maltese', 'Pomeranian', 'Great Dane',
-  'Mixed Breed', 'Other'
-];
+const popularBreeds = SIGNUP_BREEDS;
 
 export default function DogProfileForm({ dog, onSuccess }: DogProfileFormProps) {
   const router = useRouter();
