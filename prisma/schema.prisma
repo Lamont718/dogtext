@@ -94,8 +94,24 @@ model Dog {
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   aiChatMessages AiChatMessage[]
   dailyBarks     DailyBark[]
+  photo          DogPhoto?
 
   @@map("dogs")
+}
+
+// The dog's photo, kept in the database: the browser shrinks it to a small
+// JPEG square (~50KB) before upload, so no file-storage service is needed.
+// Served at /api/dogs/[id]/photo; Dog.photoUrl points there.
+model DogPhoto {
+  id          String   @id @default(cuid())
+  dogId       String   @unique
+  data        Bytes
+  contentType String   @default("image/jpeg")
+  updatedAt   DateTime @updatedAt
+
+  dog Dog @relation(fields: [dogId], references: [id], onDelete: Cascade)
+
+  @@map("dog_photos")
 }
 
 model BreedProfile {

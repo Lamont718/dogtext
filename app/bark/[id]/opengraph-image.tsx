@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { prisma } from '@/lib/db';
-import { BarkCard, WIDE_SIZE, loadCardFonts } from '@/lib/bark-card';
+import { BarkCard, WIDE_SIZE, loadCardFonts, loadDogPhotoDataUri } from '@/lib/bark-card';
 
 export const runtime = 'nodejs';
 export const contentType = 'image/png';
@@ -15,11 +15,15 @@ export default async function OgImage({ params }: { params: { id: string } }) {
     })
     .catch(() => null);
 
-  const fonts = await loadCardFonts();
+  const [fonts, photo] = await Promise.all([
+    loadCardFonts(),
+    bark ? loadDogPhotoDataUri(bark.dogId) : Promise.resolve(null),
+  ]);
   return new ImageResponse(
     (
       <BarkCard
         format="wide"
+        photo={photo}
         dogName={bark?.dog.name ?? 'Your dog'}
         dogBreed={bark?.dog.breed ?? ''}
         message={bark?.messageText ?? "I'd text you, but nobody has signed me up yet."}

@@ -38,9 +38,20 @@ interface BarkCardProps {
   dogBreed: string;
   message: string;
   format: 'story' | 'wide';
+  /** data: URI of the dog's photo, if they've added one. */
+  photo?: string | null;
 }
 
-export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) {
+/** Load a dog's stored photo as a data: URI for the card, or null. */
+export async function loadDogPhotoDataUri(dogId: string): Promise<string | null> {
+  const { prisma } = await import('./db');
+  const p = await prisma.dogPhoto
+    .findUnique({ where: { dogId }, select: { data: true, contentType: true } })
+    .catch(() => null);
+  return p ? `data:${p.contentType};base64,${Buffer.from(p.data).toString('base64')}` : null;
+}
+
+export function BarkCard({ dogName, dogBreed, message, format, photo }: BarkCardProps) {
   const story = format === 'story';
   const text = message.length > 280 ? message.slice(0, 277) + '…' : message;
   // Long barks get a smaller type size so they never run off the card.
@@ -84,6 +95,15 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
             borderBottom: '2px solid #F0F0F0',
           }}
         >
+          {photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={photo}
+              width={story ? 104 : 60}
+              height={story ? 104 : 60}
+              style={{ borderRadius: 999, objectFit: 'cover' }}
+            />
+          ) : (
           <div
             style={{
               width: story ? 104 : 60,
@@ -101,6 +121,7 @@ export function BarkCard({ dogName, dogBreed, message, format }: BarkCardProps) 
           >
             {dogName.charAt(0).toUpperCase()}
           </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontFamily: 'Poppins', fontSize: story ? 48 : 30, fontWeight: 700, color: '#2C2C2C' }}>{dogName}</div>
             <div style={{ fontSize: story ? 30 : 20, color: '#888' }}>

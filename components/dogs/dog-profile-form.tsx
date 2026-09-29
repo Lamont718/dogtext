@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -13,6 +13,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Upload, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { SIGNUP_BREEDS } from '../../lib/dog-voice';
+import { uploadDogPhoto } from '../../lib/dog-photo';
 
 const MAX_TRAITS = 3;
 
@@ -59,6 +60,14 @@ export default function DogProfileForm({ dog, onSuccess }: DogProfileFormProps) 
     healthConditions: [],
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedFile) return;
+    const url = URL.createObjectURL(selectedFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [selectedFile]);
   const [customBreed, setCustomBreed] = useState('');
 
   const handleInputChange = (field: keyof Dog, value: any) => {
@@ -95,34 +104,41 @@ export default function DogProfileForm({ dog, onSuccess }: DogProfileFormProps) 
     setIsLoading(true);
 
     try {
-      const submitData = new FormData();
-      submitData.append('name', formData.name);
-      submitData.append('breed', formData.breed === 'Other' ? customBreed : formData.breed);
-      if (formData.age) submitData.append('age', formData.age.toString());
-      if (formData.ageUnit) submitData.append('ageUnit', formData.ageUnit);
-      if (formData.weight) submitData.append('weight', formData.weight.toString());
-      if (formData.weightUnit) submitData.append('weightUnit', formData.weightUnit);
-      if (formData.gender) submitData.append('gender', formData.gender);
-      submitData.append('personalityTraits', formData.personalityTraits.join(','));
-      submitData.append('healthConditions', formData.healthConditions.join(','));
-      if (selectedFile) submitData.append('photo', selectedFile);
+      const payload = {
+        name: formData.name,
+        breed: formData.breed === 'Other' ? customBreed || 'Other' : formData.breed,
+        age: formData.age || null,
+        ageUnit: formData.age ? formData.ageUnit || null : null,
+        weight: formData.weight || null,
+        weightUnit: formData.weight ? formData.weightUnit || null : null,
+        gender: formData.gender || null,
+        personalityTraits: formData.personalityTraits,
+        healthConditions: formData.healthConditions,
+      };
 
-      const url = dog?.id ? `/api/dogs/${dog.id}` : '/api/dogs';
-      const method = dog?.id ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        body: dog?.id ? JSON.stringify(formData) : submitData,
-        headers: dog?.id ? { 'Content-Type': 'application/json' } : {},
+      const response = await fetch(dog?.id ? `/api/dogs/${dog.id}` : '/api/dogs', {
+        method: dog?.id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({}));
         throw new Error(error.error || 'Failed to save dog profile');
       }
 
-      const savedDog = await response.json();
-      
+      const saved = await response.json();
+      const dogId: string | undefined = dog?.id ?? saved?.dog?.id;
+
+      if (selectedFile && dogId) {
+        try {
+          await uploadDogPhoto(dogId, selectedFile);
+        } catch (err) {
+          // The dog is saved; only the photo failed. Say so rather than losing the dog.
+          toast.error(err instanceof Error ? err.message : 'Photo upload failed.');
+        }
+      }
+
       if (onSuccess) {
         onSuccess();
       } else {
@@ -140,7 +156,7 @@ export default function DogProfileForm({ dog, onSuccess }: DogProfileFormProps) 
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Heart className="w-5 h-5 text-blue-600" />
+          <Heart className="w-5 h-5 text-[#FF8C42]" />
           <span>{dog ? 'Edit' : 'Add'} Dog Profile</span>
         </CardTitle>
       </CardHeader>
@@ -318,37 +334,51 @@ export default function DogProfileForm({ dog, onSuccess }: DogProfileFormProps) 
           </div>
 
           {/* Photo Upload */}
-          {!dog && (
-            <div>
-              <Label htmlFor="photo">Photo</Label>
-              <div className="mt-2">
-                <label
-                  htmlFor="photo"
-                  className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
-                >
-                  <div className="text-center">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">
-                      {selectedFile ? selectedFile.name : 'Click to upload a photo'}
-                    </p>
-                  </div>
-                  <input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
+          <div>
+            <Label htmlFor="photo">Photo</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              Shows on {formData.name || 'your dog'}'s texts and the pictures you share. A close-up of their face works best.
+            </p>
+            <div className="mt-2">
+              <label
+                htmlFor="photo"
+                className="flex items-center gap-4 w-full p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
+              >
+                {previewUrl || formData.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={previewUrl || formData.photoUrl || ''}
+                    alt=""
+                    className="w-20 h-20 rounded-full object-cover shrink-0"
                   />
-                </label>
-              </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                    <Upload className="w-7 h-7 text-gray-400" />
+                  </div>
+                )}
+                <p className="text-sm text-gray-600">
+                  {selectedFile
+                    ? 'Looks good. Save to keep it.'
+                    : formData.photoUrl
+                      ? 'Tap to change the photo'
+                      : 'Tap to add a photo'}
+                </p>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
             </div>
-          )}
+          </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
             disabled={isLoading || !formData.name || !formData.breed}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-[#FF8C42] hover:bg-[#FF6B1A] text-white rounded-full"
           >
             {isLoading ? 'Saving...' : dog ? 'Update Profile' : 'Add Dog'}
           </Button>

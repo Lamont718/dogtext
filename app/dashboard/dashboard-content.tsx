@@ -229,15 +229,21 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <Avatar className="w-12 h-12">
-                          {dog.photoUrl ? (
+                        {dog.photoUrl ? (
+                          <Avatar className="w-12 h-12">
                             <AvatarImage src={dog.photoUrl} alt={dog.name} />
-                          ) : (
-                            <AvatarFallback className="bg-[#FFF8F0] text-[#FF8C42]">
-                              {dog.name.charAt(0)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
+                          </Avatar>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setEditingDog(dog)}
+                            className="w-12 h-12 shrink-0 rounded-full border-2 border-dashed border-[#FF8C42] text-[#FF8C42] text-[10px] font-semibold leading-tight hover:bg-[#FFF8F0]"
+                          >
+                            Add
+                            <br />
+                            photo
+                          </button>
+                        )}
                         <div>
                           <h3 className="font-semibold text-gray-900 dark:text-gray-100">{dog.name}</h3>
                           <p className="text-gray-600 dark:text-gray-400 text-sm">

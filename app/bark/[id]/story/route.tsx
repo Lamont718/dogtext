@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { prisma } from '@/lib/db';
-import { BarkCard, STORY_SIZE, loadCardFonts } from '@/lib/bark-card';
+import { BarkCard, STORY_SIZE, loadCardFonts, loadDogPhotoDataUri } from '@/lib/bark-card';
 
 export const runtime = 'nodejs';
 
@@ -16,11 +16,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   if (!bark) return new Response('Not found', { status: 404 });
 
-  const fonts = await loadCardFonts();
+  const [fonts, photo] = await Promise.all([loadCardFonts(), loadDogPhotoDataUri(bark.dogId)]);
   const image = new ImageResponse(
     (
       <BarkCard
         format="story"
+        photo={photo}
         dogName={bark.dog.name}
         dogBreed={bark.dog.breed}
         message={bark.messageText}
