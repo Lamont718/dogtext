@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -43,14 +43,14 @@ interface SampleBark {
 }
 
 interface HomePageContentProps {
-  session: Session | null;
   featuredArticles: Article[];
   popularBreeds: BreedProfile[];
   recentArticles: Article[];
   sampleBarks: SampleBark[];
 }
 
-export default function HomePageContent({ session, featuredArticles, popularBreeds, recentArticles, sampleBarks }: HomePageContentProps) {
+export default function HomePageContent({ featuredArticles, popularBreeds, recentArticles, sampleBarks }: HomePageContentProps) {
+  const { data: session } = useSession();
   const [email, setEmail] = useState('');
   const [showVideo, setShowVideo] = useState(false);
   
@@ -144,7 +144,7 @@ export default function HomePageContent({ session, featuredArticles, popularBree
             {/* Left Column - 60% */}
             <motion.div
               className="lg:col-span-3"
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
@@ -191,7 +191,7 @@ export default function HomePageContent({ session, featuredArticles, popularBree
             {/* Right Column - 40% — sample dog text */}
             <motion.div
               className="lg:col-span-2"
-              initial={{ opacity: 0, x: 20 }}
+              initial={false}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >

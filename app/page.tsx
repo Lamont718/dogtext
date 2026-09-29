@@ -1,11 +1,12 @@
 import { Suspense } from 'react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../lib/auth-config';
 import { prisma } from '../lib/db';
 import HomePageContent from './homepage-content';
 
+// Pre-built and refreshed hourly. Checking the login here made every visit
+// wait on a cold database; the login check now happens in the browser.
+export const revalidate = 3600;
+
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
 
   // Get featured content
   const [featuredArticles, popularBreeds, recentArticles, sampleBarks] = await Promise.all([
@@ -73,7 +74,6 @@ export default async function HomePage() {
   return (
     <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
       <HomePageContent
-        session={session}
         featuredArticles={featuredArticles}
         popularBreeds={popularBreeds}
         recentArticles={recentArticles}
