@@ -19,9 +19,9 @@ const cards = [
   {
     href: '/learn/articles',
     icon: Heart,
-    title: 'Expert Articles',
+    title: 'Dog Care Guides',
     body: 'Plain-language guides on training, health, nutrition, puppy care, and senior care.',
-    cta: 'Read articles',
+    cta: 'Read the guides',
   },
   {
     href: '/tools',

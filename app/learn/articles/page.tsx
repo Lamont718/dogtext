@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Expert Articles | DogText',
+  title: 'Dog Care Guides | DogText',
   description:
     'Plain-language guides on training, health, nutrition, puppy and senior care — written so you can use them today.',
 };
@@ -59,9 +59,10 @@ export default async function ArticlesPage({
   return (
     <div className="container max-w-6xl mx-auto px-4 py-12">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">Expert Articles</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Dog Care Guides</h1>
         <p className="text-xl text-gray-600 max-w-2xl">
           Plain-language guides on training, health, nutrition, puppy and senior care.
+          Written by DogText, not a veterinarian: for anything medical, ask your vet.
         </p>
       </div>
 

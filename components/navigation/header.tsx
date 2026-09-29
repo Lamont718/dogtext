@@ -66,7 +66,7 @@ export default function Header() {
                           href="/learn/articles"
                           className="block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
                         >
-                          <div className="font-medium">Expert Articles</div>
+                          <div className="font-medium">Dog Care Guides</div>
                           <div className="text-sm text-gray-600">Training, health & nutrition</div>
                         </Link>
                         <Link
@@ -230,7 +230,7 @@ export default function Header() {
                     className="text-lg font-medium text-gray-900 hover:text-[#FF8C42]"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Expert Articles
+                    Dog Care Guides
                   </Link>
                   <Link
                     href="/learn/tools"

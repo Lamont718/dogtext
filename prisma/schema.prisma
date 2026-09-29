@@ -46,6 +46,10 @@ model User {
   image             String?
   subscriptionTier  String    @default("FREE") // FREE, PREMIUM, FAMILY
   subscriptionId    String?
+  // The paid-plan waitlist: set when someone joins the list for PREMIUM or
+  // FAMILY. The people to email, at their launch price, when billing opens.
+  interestedPlan    String?
+  interestedAt      DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

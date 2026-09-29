@@ -1714,7 +1714,7 @@ The pain of losing a beloved companion is the price we pay for the joy they brin
           excerpt: article.content.substring(0, 200) + '...',
           category: article.category,
           readTime: estimateReadingTime(article.content),
-          author: 'DogText Expert Team',
+          author: 'DogText',
           tags: article.tags,
           isPublished: true,
           isFeatured: ['House Training Your Puppy: A Complete Guide', 'Caring for Senior Dogs: Health & Comfort', 'Choosing the Right Dog Food: A Nutritionist\'s Guide'].includes(article.title),

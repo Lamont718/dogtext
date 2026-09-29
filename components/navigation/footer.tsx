@@ -33,7 +33,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/learn/articles" className="text-gray-600 dark:text-gray-400 hover:text-[#FF8C42] dark:hover:text-[#FF8C42] transition-colors">
-                  Expert Articles
+                  Dog Care Guides
                 </Link>
               </li>
               <li>

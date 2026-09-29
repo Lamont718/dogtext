@@ -9,15 +9,14 @@ import Footer from '../components/navigation/footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://dogtext.com'),
-  title: 'DogText - Your Premium Dog Care Companion',
-  description: 'Connect with your dog through AI-powered conversations, expert guidance, and comprehensive resources. The premium platform for dog owners.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://dogtext-tau.vercel.app'),
+  title: 'DogText: your dog texts you every morning',
+  description: 'A free morning text from your dog, in their voice, built from their breed and personality. Text them back, share it to your story, plus plain-language breed guides and calculators.',
   keywords: 'dog care, AI dog chat, pet training, dog breeds, dog health, pet companion',
   authors: [{ name: 'DogText Team' }],
   openGraph: {
-    title: 'DogText - Your Premium Dog Care Companion',
-    description: 'Connect with your dog through AI-powered conversations, expert guidance, and comprehensive resources.',
-    url: 'https://dogtext.com',
+    title: 'DogText: your dog texts you every morning',
+    description: 'A free morning text from your dog, in their voice. Text them back and share it to your story.',
     siteName: 'DogText',
     images: [
       {
@@ -32,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DogText - Your Premium Dog Care Companion',
-    description: 'Connect with your dog through AI-powered conversations, expert guidance, and comprehensive resources.',
+    title: 'DogText: your dog texts you every morning',
+    description: 'A free morning text from your dog, in their voice. Text them back and share it to your story.',
     images: ['/og-image.png'],
   },
   robots: {

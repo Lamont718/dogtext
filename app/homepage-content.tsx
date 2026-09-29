@@ -52,8 +52,6 @@ interface HomePageContentProps {
 
 export default function HomePageContent({ featuredArticles, popularBreeds, recentArticles, sampleBarks }: HomePageContentProps) {
   const { data: session } = useSession();
-  const [email, setEmail] = useState('');
-  const [showVideo, setShowVideo] = useState(false);
   
   // AI Demo Form State
   const [ownerName, setOwnerName] = useState('');
@@ -124,11 +122,6 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
     setSelectedTraits([]);
   };
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Thank you for signing up! We\'ll be in touch soon.');
-    setEmail('');
-  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -173,12 +166,12 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                   </Link>
                 </Button>
 
-                <button
-                  onClick={() => setShowVideo(true)}
+                <a
+                  href="#try"
                   className="text-white font-semibold text-lg hover:text-white/90 transition-colors flex items-center justify-center gap-2"
                 >
-                  See how it works <Play className="w-5 h-5" />
-                </button>
+                  Try it with your dog <ArrowRight className="w-5 h-5" />
+                </a>
               </div>
 
               {/* Trust Signals */}
@@ -252,25 +245,6 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
           </div>
         </div>
 
-        {/* Video Modal */}
-        {showVideo && (
-          <div 
-            className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4"
-            onClick={() => setShowVideo(false)}
-          >
-            <div className="relative max-w-4xl w-full bg-white rounded-2xl p-4" onClick={e => e.stopPropagation()}>
-              <button 
-                onClick={() => setShowVideo(false)}
-                className="absolute -top-12 right-0 text-white text-4xl hover:text-gray-300"
-              >
-                ×
-              </button>
-              <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
-                <p className="text-gray-600">Video placeholder - Demo video would play here</p>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* 1.5 SAMPLE BARKS STRIP — social-proof / share surface */}
@@ -565,9 +539,9 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                 </p>
                 <p>
                   We believe dogs deserve the best care possible, and owners deserve 
-                  expert guidance without the overwhelm. So we created one place with 
-                  everything: AI that captures your dog's personality, training that 
-                  actually works, health info you can trust, and products worth buying.
+                  guidance without the overwhelm. So we started with the thing that made
+                  her smile, a text from Coco every morning, and added plain-language
+                  guides and tools for the rest.
                 </p>
                 <p className="font-semibold">
                   Because your dog isn't just a pet. They're family.
@@ -693,9 +667,9 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                     When You Need Real Answers, Fast
                   </h3>
                   <p className="text-[#3D3D3D] dark:text-gray-300 leading-relaxed mb-6">
-                    Is that limp serious? How much should they eat? Our vet-approved 
-                    resources and smart tools give you answers when you need them - 
-                    at 2 AM or 2 PM.
+                    How much should they eat? How old is that in dog years? Our guides and
+                    calculators give you a starting point at 2 AM or 2 PM, and we'll always
+                    tell you when it's a question for your vet.
                   </p>
                   <Link 
                     href="/tools" 
@@ -729,14 +703,14 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                     When You Want to Spoil Them Right
                   </h3>
                   <p className="text-[#3D3D3D] dark:text-gray-300 leading-relaxed mb-6">
-                    Not all dog products are created equal. We only recommend what 
-                    actually works - tested by experts, loved by dogs.
+                    The shop isn't open yet. When it is, it will only carry things we'd buy
+                    for Coco. Get on the list to hear first.
                   </p>
                   <Link 
                     href="/shop" 
                     className="text-[#FF8C42] font-semibold hover:text-[#FF6B1A] transition-colors inline-flex items-center gap-2"
                   >
-                    Shop Smart Picks <ArrowRight className="w-5 h-5" />
+                    Get on the list <ArrowRight className="w-5 h-5" />
                   </Link>
                 </CardContent>
               </Card>
@@ -781,8 +755,8 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                 <div className="text-3xl mb-3">🔒</div>
                 <h3 className="text-xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">Your data stays yours</h3>
                 <p className="text-[#3D3D3D] dark:text-gray-300 leading-relaxed">
-                  No selling your email. No surprise upsells. Cancel any subscription with
-                  one click — no "are you sure?" maze.
+                  No selling your email. No surprise upsells. When paid plans open,
+                  canceling will be one click, with no "are you sure?" maze.
                 </p>
               </CardContent>
             </Card>
@@ -814,7 +788,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               Popular Breed Guides
             </h2>
             <p className="text-xl text-[#6B6B6B] dark:text-gray-400">
-              Expert insights into the breeds you love
+              What makes each breed tick
             </p>
           </motion.div>
 
@@ -870,10 +844,10 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
             className="text-center mb-16"
           >
             <h2 className="text-4xl lg:text-5xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-4">
-              Expert Advice & Guides
+              Dog Care Guides
             </h2>
             <p className="text-xl text-[#6B6B6B] dark:text-gray-400">
-              Vet-approved content you can trust
+              Plain-language guides. For anything medical, your vet comes first.
             </p>
           </motion.div>
 
@@ -931,7 +905,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               Choose Your Experience
             </h2>
             <p className="text-xl text-[#6B6B6B] dark:text-gray-400">
-              Start free. Upgrade when you're ready. Cancel anytime.
+              Start free. Premium is coming soon, and founding members keep their launch price.
             </p>
           </motion.div>
 
@@ -975,7 +949,7 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300">Read every expert article</span>
+                      <span className="text-[#3D3D3D] dark:text-gray-300">Read every guide</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -1004,13 +978,13 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               <Card className="border-4 border-[#FF8C42] shadow-2xl relative bg-white transform md:scale-105">
                 <CardContent className="p-8 text-center">
                   <Badge className="gradient-warm text-white mb-4">
-                    ⭐ MOST POPULAR
+                    COMING SOON
                   </Badge>
                   <h3 className="text-2xl font-bold text-[#2C2C2C] dark:text-gray-100 mb-2">
                     Serious Dog Parents
                   </h3>
                   <p className="text-[#6B6B6B] dark:text-gray-400 mb-6 min-h-[60px]">
-                    Unlimited AI chats, every training video, all health tools, zero ads. Your dog deserves premium.
+                    Text your dog as much as you want, for up to 3 dogs. Opening soon.
                   </p>
                   <div className="mb-4">
                     <span className="text-5xl font-bold text-[#2C2C2C] dark:text-gray-100">$7.99</span>
@@ -1031,10 +1005,6 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
                       <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Everything in Free</strong></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-[#FF8C42] flex-shrink-0 mt-0.5" />
-                      <span className="text-[#3D3D3D] dark:text-gray-300"><strong>Priority support over email</strong></span>
                     </li>
                   </ul>
                   <Button
@@ -1151,11 +1121,11 @@ export default function HomePageContent({ featuredArticles, popularBreeds, recen
               <span>•</span>
               <span>✨ Founder pricing locked while in beta</span>
               <span>•</span>
-              <span>🐾 Cancel in one click</span>
+              <span>🐾 A new text every morning</span>
             </div>
 
             <p className="text-sm opacity-85">
-              No credit card required • 7-day premium trial • Cancel anytime
+              No credit card required • Free forever
             </p>
           </motion.div>
         </div>

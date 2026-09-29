@@ -366,18 +366,17 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
               <CardContent className="p-6">
                 <div className="flex items-center mb-3">
                   <Crown className="w-5 h-5 text-[#FF8C42] mr-2" />
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Reserve founder pricing</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Premium is coming</h3>
                 </div>
                 <ul className="text-sm text-gray-700 space-y-1 mb-4">
-                  <li>• Unlimited AI conversations</li>
+                  <li>• Unlimited chats with your dog</li>
                   <li>• Up to 3 dog profiles (Premium) or 5 (Family)</li>
-                  <li>• Priority support over email</li>
-                  <li>• Lock today's price for life</li>
+                  <li>• Join the list and keep today&apos;s price</li>
                 </ul>
                 <Button asChild className="w-full bg-[#FF8C42] hover:bg-[#FF6B1A]">
                   <Link href="/premium">
                     <Crown className="w-4 h-4 mr-2" />
-                    See pricing
+                    See the plans
                   </Link>
                 </Button>
               </CardContent>
@@ -389,7 +388,7 @@ export default function DashboardContent({ dogs, user, messageUsage }: Dashboard
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Weekly Usage</CardTitle>
-                <CardDescription>Resets every Monday</CardDescription>
+                <CardDescription>Resets every Sunday</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">

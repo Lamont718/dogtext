@@ -28,10 +28,17 @@ export default function SignupPage() {
   const [traits, setTraits] = useState<string[]>([]);
   // The dog from the homepage demo, shown as a summary instead of empty fields.
   const [demoDog, setDemoDog] = useState<PendingDog | null>(null);
+  // Came from 'Join the list' on the pricing page.
+  const [plan, setPlan] = useState<'PREMIUM' | 'FAMILY' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get('plan');
+    if (p === 'premium' || p === 'family') setPlan(p === 'premium' ? 'PREMIUM' : 'FAMILY');
+  }, []);
 
   useEffect(() => {
     const pending = readPendingDog();
@@ -70,6 +77,7 @@ export default function SignupPage() {
           email,
           password,
           dog: { name: dogName, breed, traits },
+          ...(plan ? { plan } : {}),
         }),
       });
 
@@ -117,6 +125,13 @@ export default function SignupPage() {
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm dark:bg-red-950/40 dark:border-red-900 dark:text-red-300">
                 {error}
+              </div>
+            )}
+
+            {plan && (
+              <div className="rounded-2xl bg-[#FFF8F0] px-4 py-3 text-sm text-[#2C2C2C] dark:bg-muted dark:text-gray-100">
+                You&apos;ll be on the {plan === 'PREMIUM' ? 'Premium' : 'Family'} list. It&apos;s free until paid
+                plans open, and you keep today&apos;s price.
               </div>
             )}
 

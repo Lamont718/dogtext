@@ -2,11 +2,12 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Crown, Zap } from 'lucide-react';
+import JoinListButton from '@/components/premium/join-list-button';
 
 export const metadata = {
   title: 'Pricing | DogText',
   description:
-    'Free forever for casual users. Premium for unlimited AI chats. Family for multi-dog households. Founder pricing locked while in beta.',
+    'Free forever: a morning text from your dog and 5 chats a week. Premium and Family open soon, and the list keeps today’s price.',
 };
 
 const plans = [
@@ -16,10 +17,11 @@ const plans = [
     period: 'forever',
     description: 'Try us out. No credit card.',
     features: [
-      '5 AI conversations per week',
+      'A new text from your dog every morning',
+      '5 chats with your dog per week',
       '1 dog profile',
       'Browse the breed library',
-      'Read all expert articles',
+      'Read every guide',
       'Use the age + food calculators',
     ],
     cta: { label: 'Start Free', href: '/auth/signup' },
@@ -32,12 +34,12 @@ const plans = [
     period: 'month',
     description: 'For serious dog parents.',
     features: [
-      'Unlimited AI conversations',
+      'Unlimited chats with your dog',
       'Up to 3 dog profiles',
       'Everything in Free',
-      'Priority support over email',
     ],
-    cta: { label: 'Reserve founder pricing', href: '/auth/signup?plan=premium' },
+    cta: { label: 'Join the list', href: '/auth/signup?plan=premium' },
+    waitlist: 'PREMIUM' as const,
     popular: true,
     icon: Crown,
   },
@@ -51,7 +53,8 @@ const plans = [
       'Up to 5 dog profiles',
       'One bill for the whole pack',
     ],
-    cta: { label: 'Reserve founder pricing', href: '/auth/signup?plan=family' },
+    cta: { label: 'Join the list', href: '/auth/signup?plan=family' },
+    waitlist: 'FAMILY' as const,
     popular: false,
     icon: Zap,
   },
@@ -64,8 +67,8 @@ export default function PremiumPage() {
         <Badge className="bg-[#FF8C42] text-white mb-4">FOUNDING MEMBERS</Badge>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Choose your plan</h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          We're in beta. Sign up for any paid tier now and you keep your launch rate
-          forever — even when prices go up.
+          Free is open now. Paid plans open soon: join the list and you keep today's
+          price for as long as you stay, even when prices go up.
         </p>
       </div>
 
@@ -81,7 +84,7 @@ export default function PremiumPage() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-[#FF8C42] text-white">Most Popular</Badge>
+                  <Badge className="bg-[#FF8C42] text-white">Coming soon</Badge>
                 </div>
               )}
 
@@ -109,6 +112,9 @@ export default function PremiumPage() {
                   ))}
                 </ul>
 
+                {'waitlist' in plan && plan.waitlist ? (
+                  <JoinListButton plan={plan.waitlist} highlighted={plan.popular} />
+                ) : (
                 <Link
                   href={plan.cta.href}
                   className={`block w-full text-center py-3 rounded-full font-semibold transition-colors ${
@@ -119,6 +125,7 @@ export default function PremiumPage() {
                 >
                   {plan.cta.label}
                 </Link>
+                )}
               </CardContent>
             </Card>
           );

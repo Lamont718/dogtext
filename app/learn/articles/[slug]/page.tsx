@@ -63,7 +63,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           )}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
             <span className="inline-flex items-center gap-1">
-              <User className="w-4 h-4" /> {article.author}
+              <User className="w-4 h-4" /> {article.author === 'DogText Expert Team' ? 'DogText' : article.author}
             </span>
             <span className="inline-flex items-center gap-1">
               <Clock className="w-4 h-4" /> {article.readTime} min read
@@ -77,6 +77,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               })}
             </span>
           </div>
+          <p className="mt-4 text-sm text-gray-500 bg-[#FFF8F0] rounded-xl px-4 py-3">
+            A general guide written by DogText, not a veterinarian. For anything about your dog&apos;s
+            health, ask your vet. If they may have eaten something toxic, call ASPCA Animal Poison
+            Control at (888) 426-4435.
+          </p>
         </header>
 
         {article.imageUrl && (
